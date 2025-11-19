@@ -1,0 +1,6 @@
+[gd_resource type="ORMMaterial3D" format=3 uid="uid://c2dh6pp3n7ndk"]
+
+[resource]
+no_depth_test = true
+emission_enabled = true
+emission = Color(0.4966907, 0.4966907, 0.4966907, 1)
