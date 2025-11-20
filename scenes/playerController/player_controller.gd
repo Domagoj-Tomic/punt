@@ -174,8 +174,8 @@ func _unhandled_input(event : InputEvent):
 		if event.is_released():
 			# Toggle debug menu on F7
 			if event.keycode == 4194338: # F7
-				if has_node("UserInterface/DebugPanel"):
-					$UserInterface/DebugPanel.visible = !$UserInterface/DebugPanel.visible
+				if pawn.has_node("UserInterface/DebugPanel"):
+					pawn.get_node("UserInterface/DebugPanel").visible = !pawn.get_node("UserInterface/DebugPanel").visible
 
 
 func handle_pausing():

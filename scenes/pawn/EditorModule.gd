@@ -41,7 +41,7 @@ func _get_configuration_warnings():
 
 	if head_y_rotation > 360:
 		warnings.append("The head rotation is greater than 360")
-	
+
 	if head_y_rotation < -360:
 		warnings.append("The head rotation is less than -360")
 

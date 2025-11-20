@@ -1,8 +1,8 @@
-extends BaseGun
+extends Gun
 class_name Cannon
 
 # Projectile scene (weapon-specific)
-var projectileInstance = preload("res://scenes/Weapons/projectile/projectile.tscn")
+var projectileInstance = preload("res://scenes/weapons/projectileBase/projectile_base.tscn")
 
 # Optional local ShapeCast (kept as a child node under Mesh/Chamber in the scene)
 @onready var shapeCast: ShapeCast3D = get_node_or_null("Mesh/Chamber/ShapeCast3D") as ShapeCast3D
@@ -25,7 +25,7 @@ func fire_projectile() -> void:
 		push_error("%s: projectileInstance is not set" % self)
 		return
 
-	var projectile: RigidBody3D = projectileInstance.instantiate() as RigidBody3D
+	var projectile: Projectile = projectileInstance.instantiate() as Projectile
 	if projectile == null:
 		push_error("%s: failed to instantiate projectileInstance" % self)
 		return

@@ -1,14 +1,14 @@
 [gd_scene load_steps=4 format=3 uid="uid://b5682cv8dco12"]
 
-[ext_resource type="PackedScene" uid="uid://b7kwk3sw7jcoj" path="res://scenes/Weapons/weaponBaseGun/base_gun.tscn" id="1_2lug3"]
-[ext_resource type="Script" uid="uid://csd8k3civy18p" path="res://scenes/Weapons/weaponCannon/weaponCannon.gd" id="2_ntm2i"]
+[ext_resource type="PackedScene" uid="uid://b7kwk3sw7jcoj" path="res://scenes/weapons/weaponBaseGun/base_gun.tscn" id="1_2lug3"]
+[ext_resource type="Script" uid="uid://csd8k3civy18p" path="res://scenes/weapons/weaponCannon/weapon_cannon.gd" id="2_ntm2i"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_ntm2i"]
 radius = 0.2
 
 [node name="BaseGun" instance=ExtResource("1_2lug3")]
 script = ExtResource("2_ntm2i")
-projectileVelocity = 50.0
+projectileVelocity = 10.0
 resolve_overlap_with_shapecast = true
 immediate_shapecast_update = true
 

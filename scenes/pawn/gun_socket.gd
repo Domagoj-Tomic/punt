@@ -2,7 +2,7 @@ extends Node3D
 class_name GunSocket
 
 
-@export var Weapons: Array[BaseGun]
+@export var Weapons: Array[Gun]
 
 var selectedGunIndex : int = -1
 var input_fire_pressed : bool = false
@@ -15,7 +15,7 @@ func _ready() -> void:
 		Weapons[0].equip(owner)
 
 	######## Add weapon for debugging ########
-	var gun = load("res://scenes/Weapons/weaponCannon/weaponCannon.tscn").instantiate()
+	var gun = load("res://scenes/weapons/weaponCannon/weapon_cannon.tscn").instantiate()
 	add_weapon(gun)
 	equip_weapon(gun)
 	##########################################
@@ -30,7 +30,7 @@ func  add_weapon(weapon):
 		Weapons.append(weapon)
 
 
-func equip_weapon(weapon : BaseGun = null):
+func equip_weapon(weapon : Gun = null):
 	if weapon and Weapons.has(weapon):
 		selectedGunIndex = Weapons.find(weapon)
 		add_child(Weapons[selectedGunIndex])

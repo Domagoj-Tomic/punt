@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3 uid="uid://btes5dg1ixxus"]
 
-[ext_resource type="PackedScene" uid="uid://crtkv0nsrc50d" path="res://scenes/playerController/playerController.tscn" id="1_2yu1p"]
-[ext_resource type="PackedScene" uid="uid://brbisld7l2pcm" path="res://scenes/pawn/pawn.tscn" id="2_f1tf0"]
+[ext_resource type="PackedScene" uid="uid://brbisld7l2pcm" path="res://scenes/pawn/pawn.tscn" id="1_52kye"]
+[ext_resource type="PackedScene" uid="uid://crtkv0nsrc50d" path="res://scenes/playerController/player_controller.tscn" id="2_yp2xm"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_vho56"]
 height = 0.001
@@ -52,9 +52,9 @@ skeleton = NodePath("../..")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
 shape = SubResource("SphereShape3D_vho56")
 
-[node name="Pawn" parent="." instance=ExtResource("2_f1tf0")]
+[node name="Pawn" parent="." instance=ExtResource("1_52kye")]
 transform = Transform3D(-4.3711385e-08, 0, -0.99999994, 0, 1, 0, 0.99999994, 0, -4.3711385e-08, 0, 0, 0)
 sprint_enabled = true
 
-[node name="PlayerController" parent="Pawn" instance=ExtResource("1_2yu1p")]
+[node name="PlayerController" parent="Pawn" instance=ExtResource("2_yp2xm")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)

@@ -317,7 +317,6 @@ func get_pawn_velocity() -> Vector3:
 
 
 #region Debug
-
 func update_debug_menu_per_tick():
 	current_speed = Vector3.ZERO.distance_to(get_pawn_velocity())
 	if has_node("UserInterface/DebugPanel"):
