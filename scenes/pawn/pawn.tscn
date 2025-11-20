@@ -1,6 +1,6 @@
 [gd_scene load_steps=23 format=3 uid="uid://brbisld7l2pcm"]
 
-[ext_resource type="Script" uid="uid://7c5wcdrtpb8l" path="res://scenes/pawn/hand.gd" id="1_3ppau"]
+[ext_resource type="Script" uid="uid://bf32ish0yfh1j" path="res://scenes/pawn/gun_socket.gd" id="1_3ppau"]
 [ext_resource type="Script" uid="uid://blr1cvra03430" path="res://scenes/pawn/pawn.gd" id="1_dbje4"]
 [ext_resource type="Script" uid="uid://u5u7xxlvmcxx" path="res://scenes/pawn/debug.gd" id="2_dbje4"]
 [ext_resource type="Script" uid="uid://dgfl3skp075ft" path="res://scenes/pawn/EditorModule.gd" id="3_l50vd"]
@@ -421,18 +421,9 @@ libraries = {
 }
 speed_scale = 4.0
 
-[node name="Hand" type="Node3D" parent="Head"]
-script = ExtResource("1_3ppau")
-metadata/_edit_group_ = true
-
-[node name="GunSocket_Centered" type="Marker3D" parent="Head/Hand"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
-
-[node name="GunSocket_Right" type="Marker3D" parent="Head/Hand"]
+[node name="GunSocket" type="Marker3D" parent="Head"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, -0.5, 0)
-
-[node name="GunSocket_Left" type="Marker3D" parent="Head/Hand"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, -0.5, 0)
+script = ExtResource("1_3ppau")
 
 [node name="UserInterface" type="Control" parent="."]
 layout_mode = 3

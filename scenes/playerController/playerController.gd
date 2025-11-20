@@ -8,6 +8,7 @@ class_name PlayerController
 @export_group("Controller")
 @export var HEAD : Node3D
 @export var CAMERA : Camera3D
+@export var GUNSOCKET : GunSocket
 
 @export_group("Controls")
 @export var controls : Dictionary = {
@@ -18,7 +19,11 @@ class_name PlayerController
 	JUMP = "jump",
 	CROUCH = "crouch",
 	SPRINT = "sprint",
-	PAUSE = "menu"
+	PAUSE = "menu",
+	WEAPON1 = "select_weapon_1",
+	WEAPON2 = "select_weapon_2",
+	WEAPON3 = "select_weapon_3",
+	FIRE = "fire"
 }
 
 @export_file var default_reticle
@@ -43,7 +48,7 @@ class_name PlayerController
 
 # Local
 var mouseInput : Vector2 = Vector2.ZERO
-var pawn : Node = null
+var pawn : Pawn = null
 
 func _ready():
 	# expects the controller to be a direct child of the Pawn node
@@ -59,6 +64,9 @@ func _ready():
 	if HEAD:
 		HEAD.rotation.y = pawn.rotation.y
 		pawn.rotation.y = 0.0
+
+	if GUNSOCKET:
+		pawn.GUNSOCKET = GUNSOCKET
 
 	# set the default reticle via pawn API
 	if default_reticle:
@@ -106,8 +114,10 @@ func _physics_process(_delta):
 	pawn.input_jump_pressed = Input.is_action_pressed(controls.JUMP)
 	pawn.input_jump_just_pressed = Input.is_action_just_pressed(controls.JUMP)
 	pawn.input_sprint_pressed = Input.is_action_pressed(controls.SPRINT)
-	# Toggle crouch is buggy
 	pawn.input_crouch_pressed = Input.is_action_pressed(controls.CROUCH)
+
+	if GUNSOCKET:
+		GUNSOCKET.input_fire_pressed = Input.is_action_pressed("fire")
 
 	# update pawn with head yaw for movement transform
 	if HEAD:
@@ -118,7 +128,7 @@ func _physics_process(_delta):
 
 
 func handle_head_rotation():
-	
+
 	if not HEAD:
 		return
 
@@ -214,3 +224,4 @@ func check_controls():
 func set_head(head : Node3D):
 	HEAD = head
 	CAMERA = head.get_node("Camera")
+	GUNSOCKET = head.get_node("GunSocket")

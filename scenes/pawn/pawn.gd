@@ -67,6 +67,7 @@ var gravity : float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 @onready var HEAD : Node3D = $Head
 @onready var CAMERA : Camera3D = $Head/Camera
+@onready var GUNSOCKET : GunSocket = $Head/GunSocket
 
 # Input-forwarded state (set every frame by PlayerController)
 var desired_input_dir : Vector2 = Vector2.ZERO
@@ -74,8 +75,6 @@ var input_jump_pressed : bool = false
 var input_jump_just_pressed : bool = false
 var input_sprint_pressed : bool = false
 var input_crouch_pressed : bool = false
-var input_fire_just_pressed : bool = false
-var input_fire_pressed : bool = false
 
 # The yaw of the head (radians) provided by PlayerController
 var head_yaw : float = 0.0
