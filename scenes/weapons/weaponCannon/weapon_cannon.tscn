@@ -8,7 +8,7 @@ radius = 0.2
 
 [node name="BaseGun" instance=ExtResource("1_2lug3")]
 script = ExtResource("2_ntm2i")
-projectileVelocity = 10.0
+projectileVelocity = 50.0
 resolve_overlap_with_shapecast = true
 immediate_shapecast_update = true
 

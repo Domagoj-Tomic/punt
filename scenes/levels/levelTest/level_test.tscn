@@ -1,0 +1,61 @@
+[gd_scene load_steps=11 format=3 uid="uid://cp1fi0shlidoc"]
+
+[ext_resource type="PackedScene" uid="uid://dx5nytrxyt3sc" path="res://scenes/levels/levelBase/level_base.tscn" id="1_anjyw"]
+[ext_resource type="PackedScene" uid="uid://brbisld7l2pcm" path="res://scenes/pawn/pawn.tscn" id="1_q53rb"]
+[ext_resource type="PackedScene" uid="uid://crtkv0nsrc50d" path="res://scenes/playerController/player_controller.tscn" id="2_anjyw"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_5tbcj"]
+height = 0.001
+radius = 10.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_ahoqo"]
+top_radius = 10.0
+bottom_radius = 10.0
+height = 0.001
+
+[sub_resource type="Environment" id="Environment_iurjo"]
+fog_enabled = true
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_1p0p1"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_iaocn"]
+bounce = 0.6
+
+[sub_resource type="SphereMesh" id="SphereMesh_hwv7p"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_md31e"]
+
+[node name="LevelBase" instance=ExtResource("1_anjyw")]
+
+[node name="Floor" type="StaticBody3D" parent="." index="0"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor" index="0"]
+shape = SubResource("CylinderShape3D_5tbcj")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor/CollisionShape3D" index="0"]
+mesh = SubResource("CylinderMesh_ahoqo")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." index="1"]
+transform = Transform3D(1, 0, 0, 0, 0.7858569, 0.61840844, 0, -0.61840844, 0.7858569, 0, 0, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="DirectionalLight3D" index="0"]
+environment = SubResource("Environment_iurjo")
+camera_attributes = SubResource("CameraAttributesPractical_1p0p1")
+
+[node name="RigidBody3D" type="RigidBody3D" parent="." index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.247572, 0.5004997, 0)
+physics_material_override = SubResource("PhysicsMaterial_iaocn")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D" index="0"]
+mesh = SubResource("SphereMesh_hwv7p")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D" index="1"]
+shape = SubResource("SphereShape3D_md31e")
+
+[node name="Pawn" parent="." index="3" instance=ExtResource("1_q53rb")]
+transform = Transform3D(-4.3711385e-08, 0, -0.99999994, 0, 1, 0, 0.99999994, 0, -4.3711385e-08, 0, 0, 0)
+sprint_enabled = true
+
+[node name="PlayerController" parent="Pawn" index="7" instance=ExtResource("2_anjyw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)

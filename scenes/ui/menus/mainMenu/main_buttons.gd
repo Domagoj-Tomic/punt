@@ -1,0 +1,25 @@
+extends Control
+
+
+func _ready() -> void:
+	$StartGame.pressed.connect(_start_game)
+	$Options.pressed.connect(_options)
+	$Credits.pressed.connect(_credits)
+	$Quit.pressed.connect(_quit)
+
+
+func  _start_game():
+	LevelManager.load_level("res://scenes/levels/levelTest/level_test.tscn")
+	MenuManager.close_all_menus()
+
+
+func  _options():
+	pass
+
+
+func  _credits():
+	pass
+
+
+func  _quit():
+	get_tree().quit()

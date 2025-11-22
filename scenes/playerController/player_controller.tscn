@@ -5,3 +5,4 @@
 [node name="PlayerController" type="Node3D"]
 script = ExtResource("1_vnom7")
 default_reticle = "uid://3mij3cjhkwsm"
+mouse_sensitivity = 0.125

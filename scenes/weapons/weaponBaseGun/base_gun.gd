@@ -59,5 +59,6 @@ func notify_unequipped() -> void:
 func get_chamber_global_position() -> Vector3:
 	return chamber.global_position if chamber else global_position
 
+
 func get_muzzle_global_position() -> Vector3:
 	return muzzle.global_position if muzzle else global_position
