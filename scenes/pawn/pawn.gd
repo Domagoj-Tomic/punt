@@ -7,12 +7,12 @@ class_name Pawn
 #region Character Export Group
 
 @export_group("Character")
-@export var base_speed : float = 3.0
-@export var sprint_speed : float = 6.0
-@export var crouch_speed : float = 1.0
-
+@export var base_speed : float = 10.0
+@export var sprint_speed : float = 20.0
+@export var crouch_speed : float = 3.0
 @export var acceleration : float = 10.0
-@export var jump_velocity : float = 4.5
+@export var jump_velocity : float = 6
+@export_range(0, 10, 1, "or_greater") var extra_jumps : int = 1
 
 # These input-related settings are preserved for server-side or AI use but input reading is done by PlayerController.
 @export var immobile : bool = false
@@ -38,7 +38,7 @@ class_name Pawn
 @export var jumping_enabled : bool = true
 @export var in_air_momentum : bool = true
 @export var motion_smoothing : bool = true
-@export var sprint_enabled : bool = true
+@export var sprint_enabled : bool = false
 @export_enum("Hold to Sprint", "Toggle Sprint") var sprint_mode : int = 0
 @export var crouch_enabled : bool = true
 @export_enum("Hold to Crouch", "Toggle Crouch") var crouch_mode : int = 0
@@ -60,6 +60,7 @@ var current_speed : float = 0.0
 var state : String = "normal"
 var low_ceiling : bool = false
 var was_on_floor : bool = true
+var jumps_remaining : int
 
 var RETICLE : Control
 
@@ -83,10 +84,7 @@ var head_yaw : float = 0.0
 
 
 func _ready():
-	initialize_animations()
-	check_nodes()
-	enter_normal_state()
-	find_children("", "PlayerController")[0].set_head(HEAD)
+	call_deferred("initialise_pawn")
 
 
 func _physics_process(delta):
@@ -121,6 +119,14 @@ func _physics_process(delta):
 	was_on_floor = is_on_floor()
 
 
+func initialise_pawn():
+	initialize_animations()
+	check_nodes()
+	enter_normal_state()
+	if not find_children("", "PlayerController").is_empty():
+		find_children("", "PlayerController")[0].set_head(HEAD)
+
+
 func check_nodes():
 	if not $CrouchCeilingDetection:
 		push_error("Pawn requires a child node named 'CrouchCeilingDetection' for ceiling checks.")
@@ -129,19 +135,24 @@ func check_nodes():
 #region Movement & Jumping
 
 func handle_jumping():
+	if is_on_floor():
+		jumps_remaining = extra_jumps + 1
+
 	if not jumping_enabled:
 		return
 
-	if continuous_jumping:
-		if input_jump_pressed and is_on_floor() and !low_ceiling:
+	if continuous_jumping and is_on_floor():
+		if input_jump_pressed and jumps_remaining > 0 and not low_ceiling:
 			if jump_animation:
 				JUMP_ANIMATION.play("jump", 0.25)
 			velocity.y += jump_velocity
+			jumps_remaining -= 1
 	else:
-		if input_jump_just_pressed and is_on_floor() and !low_ceiling:
+		if input_jump_just_pressed and jumps_remaining > 0 and not low_ceiling:
 			if jump_animation:
 				JUMP_ANIMATION.play("jump", 0.25)
 			velocity.y += jump_velocity
+			jumps_remaining -= 1
 
 
 func handle_movement(delta, input_dir: Vector2, head_y: float):

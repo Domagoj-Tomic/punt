@@ -57,6 +57,8 @@ func _ready():
 		push_error("PlayerController expects to be child of Pawn (CharacterBody3D).")
 		return
 
+	owner = pawn
+
 	if CAMERA:
 		pawn.CAMERA = CAMERA
 

@@ -36,7 +36,7 @@ version_control/autoload_on_startup=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/script-ide/plugin.cfg")
+enabled=PackedStringArray("res://addons/godot_3d_auto_collision_generator/plugin.cfg", "res://addons/physics_collision_import_generator/plugin.cfg", "res://addons/script-ide/plugin.cfg")
 
 [global_group]
 
