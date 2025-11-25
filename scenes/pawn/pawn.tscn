@@ -1,9 +1,14 @@
-[gd_scene load_steps=23 format=3 uid="uid://brbisld7l2pcm"]
+[gd_scene load_steps=28 format=3 uid="uid://brbisld7l2pcm"]
 
 [ext_resource type="Script" uid="uid://bf32ish0yfh1j" path="res://scenes/pawn/gun_socket.gd" id="1_3ppau"]
 [ext_resource type="Script" uid="uid://blr1cvra03430" path="res://scenes/pawn/pawn.gd" id="1_dbje4"]
+[ext_resource type="Script" uid="uid://7m153bac28fj" path="res://scenes/pawn/pawn_mesh.gd" id="2_2du13"]
 [ext_resource type="Script" uid="uid://u5u7xxlvmcxx" path="res://scenes/pawn/debug.gd" id="2_dbje4"]
-[ext_resource type="Script" uid="uid://dgfl3skp075ft" path="res://scenes/pawn/EditorModule.gd" id="3_l50vd"]
+[ext_resource type="Script" uid="uid://5abbpkidqnv4" path="res://scenes/pawn/movement_manager.gd" id="4_74r86"]
+[ext_resource type="Script" uid="uid://dqgoixychv3ds" path="res://scenes/pawn/health_manager.gd" id="5_2du13"]
+[ext_resource type="Script" uid="uid://baccftb3vict3" path="res://scenes/pawn/debug_tool.gd" id="6_i74ng"]
+[ext_resource type="Script" uid="uid://dimv5vi5q5kel" path="res://scenes/pawn/animation_manager.gd" id="8_i74ng"]
+[ext_resource type="Script" uid="uid://4dk30p6f4in0" path="res://scenes/playerController/player_controller.gd" id="9_65uxm"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kp17n"]
 albedo_color = Color(0.909804, 0.596078, 0, 1)
@@ -381,17 +386,15 @@ MarginContainer/constants/margin_top = 10
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_65uxm"]
 
-[node name="Pawn" type="CharacterBody3D" node_paths=PackedStringArray("HEADBOB_ANIMATION", "JUMP_ANIMATION", "CROUCH_ANIMATION", "COLLISION_MESH")]
+[node name="Pawn" type="CharacterBody3D"]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0, 0)
 script = ExtResource("1_dbje4")
-HEADBOB_ANIMATION = NodePath("Head/HeadbobAnimation")
-JUMP_ANIMATION = NodePath("Head/JumpAnimation")
-CROUCH_ANIMATION = NodePath("CrouchAnimation")
-COLLISION_MESH = NodePath("Collision")
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 1, 0)
+top_level = true
 mesh = SubResource("CapsuleMesh_74r86")
+script = ExtResource("2_2du13")
 
 [node name="Collision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -406,7 +409,6 @@ libraries = {
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 
 [node name="Camera" type="Camera3D" parent="Head"]
-fov = 90.0
 
 [node name="HeadbobAnimation" type="AnimationPlayer" parent="Head"]
 libraries = {
@@ -449,10 +451,29 @@ layout_mode = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="UserInterface/DebugPanel/MarginContainer"]
 layout_mode = 2
 
-[node name="CrouchCeilingDetection" type="ShapeCast3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+[node name="MovementManager" type="Node" parent="."]
+script = ExtResource("4_74r86")
+sprint_enabled = true
+
+[node name="CrouchCeilingDetection" type="ShapeCast3D" parent="MovementManager"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 1, 0)
 shape = SubResource("SphereShape3D_65uxm")
 target_position = Vector3(0, 0.5, 0)
 
-[node name="EditorModule" type="Node" parent="."]
-script = ExtResource("3_l50vd")
+[node name="HealthManager" type="Node" parent="."]
+script = ExtResource("5_2du13")
+
+[node name="DebugTool" type="Node" parent="."]
+script = ExtResource("6_i74ng")
+
+[node name="AnimationManager" type="Node" parent="." node_paths=PackedStringArray("HEADBOB_ANIMATION", "JUMP_ANIMATION", "CROUCH_ANIMATION")]
+script = ExtResource("8_i74ng")
+HEADBOB_ANIMATION = NodePath("../Head/HeadbobAnimation")
+JUMP_ANIMATION = NodePath("../Head/JumpAnimation")
+CROUCH_ANIMATION = NodePath("../CrouchAnimation")
+
+[node name="PlayerController" type="Node3D" parent="."]
+process_mode = 3
+script = ExtResource("9_65uxm")
+reticle_resource = "uid://coqpusufa8a6k"
+metadata/_custom_type_script = "uid://4dk30p6f4in0"

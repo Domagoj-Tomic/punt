@@ -1,14 +1,10 @@
 extends Node3D
 class_name PlayerController
 
-# PlayerController: input, camera, head rotation, UI toggles, reticle setup.
+# PlayerController: input, Camera, head rotation, UI toggles, reticle setup.
+
 
 #region Controller Export Group
-
-@export_group("Controller")
-@export var HEAD : Node3D
-@export var CAMERA : Camera3D
-@export var GUNSOCKET : GunSocket
 
 @export_group("Controls")
 @export var controls : Dictionary = {
@@ -25,13 +21,12 @@ class_name PlayerController
 	WEAPON3 = "select_weapon_3",
 	FIRE = "fire"
 }
-
-@export_file var default_reticle
-
-@export var mouse_sensitivity : float = 0.1
+@export_file var reticle_resource
+@export var mouse_sensitivity : float = 0.125
 @export var invert_camera_x_axis : bool = false
 @export var invert_camera_y_axis : bool = false
-
+@export var toggle_crouch : bool = false
+@export var toggle_sprint : bool = false
 @export var pausing_enabled : bool = true
 
 @export_subgroup("Controller Specific")
@@ -44,42 +39,49 @@ class_name PlayerController
 }
 @export_range(0.001, 1, 0.001) var look_sensitivity : float = 0.035
 
+@export_category("Camera")
+@export_range(60, 120) var fov: float = 75
+@export var sprint_dynamic_fov: bool = true
+@export_range(0, 40) var max_dynamic_fov_delta: float = 10
+
 #endregion
 
-# Local
-var mouseInput : Vector2 = Vector2.ZERO
+
 var pawn : Pawn = null
+var movement_manager: PawnMovementManager
+var debug_tool: PawnDebugTool
+var Head : Node3D
+var Camera : Camera3D
+var Gunsocket : GunSocket
+var mouse_input : Vector2 = Vector2.ZERO
+var reticle : Control
 
 func _ready():
+	process_mode = Node.PROCESS_MODE_ALWAYS # otherwise unpause won't work
+
 	# expects the controller to be a direct child of the Pawn node
 	pawn = get_parent()
 	if not pawn:
 		push_error("PlayerController expects to be child of Pawn (CharacterBody3D).")
 		return
 
+	Head = pawn.get_node("Head")
+	Camera = Head.get_node("Camera")
+	Gunsocket = Head.get_node("GunSocket")
+	movement_manager = pawn.get_node("MovementManager")
+	debug_tool = pawn.get_node("DebugTool")
+
 	owner = pawn
 
-	if CAMERA:
-		pawn.CAMERA = CAMERA
+	if reticle_resource:
+		change_reticle(reticle_resource)
 
-	# move head rotation from pawn to HEAD if pawn had rotation set
-	if HEAD:
-		HEAD.rotation.y = pawn.rotation.y
-		pawn.rotation.y = 0.0
-
-	if GUNSOCKET:
-		pawn.GUNSOCKET = GUNSOCKET
-
-	# set the default reticle via pawn API
-	if default_reticle:
-		if pawn.has_method("change_reticle"):
-			pawn.change_reticle(default_reticle)
+	if pawn.has_node("Head/Camera"):
+		Camera = pawn.get_node("Head/Camera")
 
 	# initialize pawn animations, etc.
 	if pawn.has_method("initialize_animations"):
 		pawn.initialize_animations()
-
-	check_controls()
 
 	# if running in web, avoid accumulated input
 	if OS.get_name() == "Web":
@@ -95,83 +97,76 @@ func _process(_delta):
 	# update debug per-frame info on the pawn's UI
 	if pawn:
 		var fps = Performance.get_monitor(Performance.TIME_FPS)
-		var status = pawn.state
+		var status = movement_manager._state
 		if not pawn.is_on_floor():
 			status += " in the air"
-		if pawn.has_method("update_debug_menu_per_frame_from_controller"):
-			pawn.update_debug_menu_per_frame_from_controller(fps, status)
+		if debug_tool.has_method("update_debug_menu_per_frame_from_controller"):
+			debug_tool.update_debug_menu_per_frame_from_controller(fps, status)
+
 
 
 func _physics_process(_delta):
-	if not pawn:
+
+	if not pawn or !pawn.input_enabled:
 		return
 
 	# gather inputs and forward to pawn
 	var input_dir = Vector2.ZERO
-	if not pawn.immobile:
-		input_dir = Input.get_vector(controls.BACKWARD, controls.FORWARD, controls.LEFT, controls.RIGHT)
+	input_dir = Input.get_vector(controls.BACKWARD, controls.FORWARD, controls.LEFT, controls.RIGHT)
 
 	# forward basic flags to pawn
-	pawn.desired_input_dir = input_dir
-	pawn.input_jump_pressed = Input.is_action_pressed(controls.JUMP)
-	pawn.input_jump_just_pressed = Input.is_action_just_pressed(controls.JUMP)
-	pawn.input_sprint_pressed = Input.is_action_pressed(controls.SPRINT)
-	pawn.input_crouch_pressed = Input.is_action_pressed(controls.CROUCH)
+	movement_manager.desired_input_dir = input_dir
+	movement_manager.input_jump_pressed = Input.is_action_pressed(controls.JUMP)
+	movement_manager.input_jump_just_pressed = Input.is_action_just_pressed(controls.JUMP)
 
-	if GUNSOCKET:
-		GUNSOCKET.input_fire_pressed = Input.is_action_pressed("fire")
+	if toggle_crouch:
+		if Input.is_action_just_pressed(controls.CROUCH):
+			movement_manager.input_crouch_pressed = !movement_manager.input_crouch_pressed
+	else:
+		movement_manager.input_crouch_pressed = Input.is_action_pressed(controls.CROUCH)
+
+	if toggle_sprint:
+		if Input.is_action_just_pressed(controls.SPRINT):
+			movement_manager.input_sprint_pressed = !movement_manager.input_sprint_pressed
+	else:
+		movement_manager.input_sprint_pressed = Input.is_action_pressed(controls.SPRINT)
+
+	if true:
+		Gunsocket.input_fire_pressed = Input.is_action_pressed("fire")
 
 	# update pawn with head yaw for movement transform
-	if HEAD:
-		pawn.head_yaw = HEAD.rotation.y
+	if Head:
+		pawn.head_yaw = Head.rotation.y
 
-	# after forwarding inputs, handle head rotation locally (mouse/controller)
-	handle_head_rotation()
+	movement_manager.look_input = mouse_input
+	# reset mouse delta after applying it
+	mouse_input = Vector2(0,0)
 
-
-func handle_head_rotation():
-
-	if not HEAD:
-		return
-
-	# mouse-based rotation using mouseInput set in _unhandled_input
-	if invert_camera_x_axis:
-		HEAD.rotation_degrees.y -= mouseInput.x * mouse_sensitivity * -1
-	else:
-		HEAD.rotation_degrees.y -= mouseInput.x * mouse_sensitivity
-
-	if invert_camera_y_axis:
-		HEAD.rotation_degrees.x -= mouseInput.y * mouse_sensitivity * -1
-	else:
-		HEAD.rotation_degrees.x -= mouseInput.y * mouse_sensitivity
-
-	# controller-sticks
+	# controller
 	if controller_support:
-		var controller_view_rotation = Input.get_vector(controller_controls.LOOK_DOWN, controller_controls.LOOK_UP, controller_controls.LOOK_RIGHT, controller_controls.LOOK_LEFT) * look_sensitivity
-		if invert_camera_y_axis:
-			HEAD.rotation.x += controller_view_rotation.x * -1
-		else:
-			HEAD.rotation.x += controller_view_rotation.x
+		var controller_input = Input.get_vector(controller_controls.LOOK_DOWN, controller_controls.LOOK_UP, controller_controls.LOOK_RIGHT, controller_controls.LOOK_LEFT) * look_sensitivity
 
 		if invert_camera_x_axis:
-			HEAD.rotation.y += controller_view_rotation.y * -1
-		else:
-			HEAD.rotation.y += controller_view_rotation.y
+			controller_input.x *= -1
+		if invert_camera_y_axis:
+			controller_input.y *= -1
 
-	# reset mouse delta after applying it
-	mouseInput = Vector2(0,0)
+		movement_manager.look_input = controller_input
 
-	# clamp vertical rotation
-	HEAD.rotation.x = clamp(HEAD.rotation.x, deg_to_rad(-90), deg_to_rad(90))
-
-	# update pawn head yaw for movement calculations (already done each physics tick, but ensure sync)
-	if pawn:
-		pawn.head_yaw = HEAD.rotation.y
+	if sprint_dynamic_fov and movement_manager._state == "sprinting":
+		Camera.fov = lerp(Camera.fov, fov + max_dynamic_fov_delta, 0.05)
+	else:
+		Camera.fov = lerp(Camera.fov, fov, 0.05)
 
 
 func _unhandled_input(event : InputEvent):
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		mouseInput = event.relative
+		mouse_input.x = event.relative.x * mouse_sensitivity
+		mouse_input.y = event.relative.y * mouse_sensitivity
+		if invert_camera_x_axis:
+			mouse_input.x *= -1
+		if invert_camera_y_axis:
+			mouse_input.y *= -1
 	elif event is InputEventKey:
 		if event.is_released():
 			# Toggle debug menu on F7
@@ -182,48 +177,15 @@ func _unhandled_input(event : InputEvent):
 
 func handle_pausing():
 	if Input.is_action_just_pressed(controls.PAUSE):
-		match Input.mouse_mode:
-			Input.MOUSE_MODE_CAPTURED:
-				Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-			Input.MOUSE_MODE_VISIBLE:
-				Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		get_tree().paused = !get_tree().paused
+		if get_tree().paused:
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		else:
+			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 
-func check_controls():
-	if !InputMap.has_action(controls.JUMP):
-		push_error("No control mapped for jumping. Please add an input map control. Disabling jump.")
-		if pawn:
-			pawn.jumping_enabled = false
-	if !InputMap.has_action(controls.LEFT):
-		push_error("No control mapped for move left. Please add an input map control. Disabling movement.")
-		if pawn:
-			pawn.immobile = true
-	if !InputMap.has_action(controls.RIGHT):
-		push_error("No control mapped for move right. Please add an input map control. Disabling movement.")
-		if pawn:
-			pawn.immobile = true
-	if !InputMap.has_action(controls.FORWARD):
-		push_error("No control mapped for move forward. Please add an input map control. Disabling movement.")
-		if pawn:
-			pawn.immobile = true
-	if !InputMap.has_action(controls.BACKWARD):
-		push_error("No control mapped for move backward. Please add an input map control. Disabling movement.")
-		if pawn:
-			pawn.immobile = true
-	if !InputMap.has_action(controls.PAUSE):
-		push_error("No control mapped for pause. Please add an input map control. Disabling pausing.")
-		pausing_enabled = false
-	if !InputMap.has_action(controls.CROUCH):
-		push_error("No control mapped for crouch. Please add an input map control. Disabling crouching.")
-		if pawn:
-			pawn.crouch_enabled = false
-	if !InputMap.has_action(controls.SPRINT):
-		push_error("No control mapped for sprint. Please add an input map control. Disabling sprinting.")
-		if pawn:
-			pawn.sprint_enabled = false
-
-
-func set_head(head : Node3D):
-	HEAD = head
-	CAMERA = head.get_node("Camera")
-	GUNSOCKET = head.get_node("GunSocket")
+func change_reticle(new_reticle_path: String = ""):
+	reticle = load(new_reticle_path).instantiate()
+	reticle.character = pawn
+	if pawn.has_node("UserInterface"):
+		pawn.get_node("UserInterface").add_child(reticle)

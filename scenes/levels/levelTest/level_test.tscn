@@ -45,9 +45,6 @@ shape = SubResource("SphereShape3D_md31e")
 
 [node name="PlayerStart" parent="." index="2" instance=ExtResource("3_anjyw")]
 
-[node name="Sprite3D" parent="PlayerStart" index="0"]
-transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 3.7633286, 0)
-
 [node name="Map Geometry" parent="." index="3" instance=ExtResource("4_5tbcj")]
 
 [node name="DeathPlane" type="Area3D" parent="." index="4"]

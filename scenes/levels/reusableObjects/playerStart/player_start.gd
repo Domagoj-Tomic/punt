@@ -13,8 +13,9 @@ func _ready() -> void:
 func spawn_player(level: Level) -> Pawn:
 	var player: Pawn = pawn_res.instantiate()
 	var player_controller: PlayerController = player_controller_res.instantiate()
-	player.add_child(player_controller)
+
 	level.add_child(player)
+	if not player.has_node("PlayerController"):
+		player.add_child(player_controller)
 	player.position = self.position
-	player.initialise_pawn()
 	return player
