@@ -12,18 +12,24 @@ var pawn: Pawn
 @export var crouch_speed : float = 3.0
 @export var acceleration : float = 10.0
 @export var jump_velocity : float = 7
-@export_range(0, 10, 1, "or_greater") var extra_jumps : int = 1
+## Grace period (seconds) after leaving a platform during which a jump input still registers.
+@export_range(0, 1, 0.05, "or_greater") var coyote_time: float = 0.2
+## Grace period (seconds) before landing during which a jump input still registers.
+@export_range(0, 1, 0.05, "or_greater") var jump_buffer : float = 0.1
+## Value of 0 disables jumping, values greater than 1 allow air jumps.
+@export_range(0, 10, 1, "or_greater") var number_of_jumps : int = 2
+## Scale factor for horizontal acceleration when the pawn is in the air.[br]
+## 0.0 = no aerial control (can't change horizontal velocity in the air).[br]
+## 1.0 = full control (same horizontal acceleration as on ground).
+@export_range(0, 1, 0.1, "or_greater") var air_control : float = 1
 
 #endregion
 
 #region Feature Settings Export Group
 
 @export_group("Feature Settings")
-@export var jumping_enabled : bool = true
-@export_range(0, 1, 0.1, "or_greater") var air_control : float = 1
 @export var sprint_enabled : bool = false
 @export var crouch_enabled : bool = true
-@export var continuous_jumping : bool = true
 @export var view_bobbing : bool = true
 ## If true, custom gravity will be applied. Othervise, project default will be used.
 @export var override_gravity : bool = true
@@ -39,6 +45,7 @@ var _current_max_speed : float = base_speed
 var _state : String = "normal"
 var _low_ceiling : bool = false
 var _jumps_remaining : int
+var _buffer_deadline : float
 var _valid_states : Array[String] = ["normal", "crouching", "sprinting"]
 
 var RETICLE : Control
@@ -87,7 +94,7 @@ func manage_pawn_movement(delta):
 	if not pawn.is_on_floor():
 		pawn.velocity.y -= gravity * delta
 
-	handle_jumping()
+	handle_jumping(delta)
 
 	var moving = desired_input_dir != Vector2.ZERO
 	handle_movement(delta, desired_input_dir, pawn.head_yaw)
@@ -101,31 +108,38 @@ func manage_pawn_movement(delta):
 	if view_bobbing:
 		animation_manager.play_headbob_animation(moving)
 
-	if pawn.is_on_floor():
-		if pawn.air_time > 0:
-			pawn.pawn_landed.emit()
-		pawn.air_time = 0
-	else:
-		pawn.air_time += delta
 
 
-func handle_jumping():
-	if pawn.is_on_floor():
-		_jumps_remaining = extra_jumps + 1
 
-	if not jumping_enabled:
+func handle_jumping(delta: float):
+	if number_of_jumps == 0: return
+
+	var _jmp =func ():
+		pawn.pawn_jumped.emit()
+		pawn.velocity.y = max(pawn.velocity.y + jump_velocity, jump_velocity)
+		_jumps_remaining -= 1
+
+	if number_of_jumps == 0:
 		return
 
-	if continuous_jumping and pawn.is_on_floor():
-		if input_jump_pressed and _jumps_remaining > 0 and not _low_ceiling:
-			pawn.pawn_jumped.emit()
-			pawn.velocity.y = max(pawn.velocity.y + jump_velocity, jump_velocity)
-			_jumps_remaining -= 1
+	if pawn.is_on_floor():
+		if pawn._air_time > 0:
+			pawn.pawn_landed.emit()
+		pawn._air_time = 0
+		_jumps_remaining = number_of_jumps
+		if input_jump_just_pressed:
+			_jmp.call()
+		elif _buffer_deadline > (Time.get_ticks_msec() / 1000.0):
+			_jmp.call()
 	else:
-		if input_jump_just_pressed and _jumps_remaining > 0 and not _low_ceiling:
-			pawn.pawn_jumped.emit()
-			pawn.velocity.y = max(pawn.velocity.y + jump_velocity, jump_velocity)
-			_jumps_remaining -= 1
+		if pawn._air_time >= coyote_time and _jumps_remaining == number_of_jumps:
+			_jumps_remaining -= 1	# remove a jump when falling off ledge
+		pawn._air_time += delta
+		if input_jump_just_pressed:
+			if _jumps_remaining > 0:
+				_jmp.call()
+			else:
+				_buffer_deadline = jump_buffer + (Time.get_ticks_msec() / 1000.0)
 
 
 func handle_movement(delta, input_dir: Vector2, head_y: float):

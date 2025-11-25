@@ -16,7 +16,7 @@ signal pawn_changed_state(old_state: String)
 
 #region Member Variable Initialization
 
-var air_time: float = 0
+var _air_time: float = 0
 
 @onready var Head : Node3D = $Head
 @onready var Camera : Camera3D = $Head/Camera
@@ -51,7 +51,6 @@ func _physics_process(delta):
 func initialise_pawn():
 	check_nodes()
 	movement_manager.enter_state("normal")
-	print(find_children("", "PlayerController").size())
 
 
 func check_nodes():

@@ -35,6 +35,7 @@ func update_debug_menu_per_tick():
 		]
 		var readable_velocity : String = "X: " + str(vd[0]) + " Y: " + str(vd[1]) + " Z: " + str(vd[2])
 		debug_panel.add_property("Velocity", readable_velocity, 3)
+		debug_panel.add_property("Jumps", movement_manager._jumps_remaining, 5)
 
 
 # Called by Controller to feed per-frame values (controller has Input)

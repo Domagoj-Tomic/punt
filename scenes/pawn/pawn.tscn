@@ -453,7 +453,6 @@ layout_mode = 2
 
 [node name="MovementManager" type="Node" parent="."]
 script = ExtResource("4_74r86")
-sprint_enabled = true
 
 [node name="CrouchCeilingDetection" type="ShapeCast3D" parent="MovementManager"]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 1, 0)
