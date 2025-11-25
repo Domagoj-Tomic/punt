@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://d1c73821hexc1"]
 
-[ext_resource type="Script" uid="uid://csbj00bvaqttu" path="res://scenes/weapons/projectileCannonball/projectile_cannonball.gd" id="1_rfecx"]
+[ext_resource type="Script" uid="uid://csbj00bvaqttu" path="res://scenes/weapons/projectiles/projectile_cannonball/projectile_cannonball.gd" id="1_rfecx"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_nt4n4"]
 friction = 0.0

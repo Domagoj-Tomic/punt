@@ -2,7 +2,7 @@ extends Gun
 class_name Cannon
 
 # Projectile scene (weapon-specific)
-var cannonball_instance = preload("res://scenes/weapons/projectileCannonball/projectile_cannonball.tscn")
+var cannonball_instance = preload("res://scenes/weapons/projectiles/projectile_cannonball/projectile_cannonball.tscn")
 
 # Optional local ShapeCast (kept as a child node under Mesh/Chamber in the scene)
 @onready var shapeCast: ShapeCast3D = get_node_or_null("Mesh/Chamber/ShapeCast3D") as ShapeCast3D

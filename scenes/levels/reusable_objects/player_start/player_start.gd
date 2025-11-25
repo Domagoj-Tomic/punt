@@ -3,7 +3,7 @@ class_name PlayerStart
 
 
 var pawn_res = load("res://scenes/pawn/pawn.tscn")
-var player_controller_res = load("res://scenes/playerController/player_controller.tscn")
+var player_controller_res = load("res://scenes/player_controller/player_controller.tscn")
 
 
 func _ready() -> void:

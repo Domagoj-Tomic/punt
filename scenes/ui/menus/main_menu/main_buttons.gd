@@ -9,7 +9,7 @@ func _ready() -> void:
 
 
 func  _start_game():
-	LevelManager.load_level("res://scenes/levels/levelTest/level_test.tscn")
+	LevelManager.load_level("res://scenes/levels/level_test/level_test.tscn")
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	MenuManager.close_all_menus()
 

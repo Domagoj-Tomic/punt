@@ -15,7 +15,7 @@ func _ready() -> void:
 		Weapons[0].equip(owner)
 
 	######## Add weapon for debugging ########
-	var gun = load("res://scenes/weapons/gunCannon/gun_cannon.tscn").instantiate()
+	var gun = load("res://scenes/weapons/guns/gun_cannon/gun_cannon.tscn").instantiate()
 	add_weapon(gun)
 	equip_weapon(gun)
 	##########################################

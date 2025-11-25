@@ -1,9 +1,9 @@
 [gd_scene load_steps=11 format=3 uid="uid://cp1fi0shlidoc"]
 
-[ext_resource type="Script" uid="uid://0mi0rrv7ipbd" path="res://scenes/levels/levelTest/level_test.gd" id="2_5tbcj"]
-[ext_resource type="PackedScene" uid="uid://bs3pfxl3fj6un" path="res://scenes/levels/reusableObjects/playerStart/player_start.tscn" id="3_anjyw"]
+[ext_resource type="Script" uid="uid://0mi0rrv7ipbd" path="res://scenes/levels/level_test/level_test.gd" id="2_5tbcj"]
+[ext_resource type="PackedScene" uid="uid://bs3pfxl3fj6un" path="res://scenes/levels/reusable_objects/player_start/player_start.tscn" id="3_anjyw"]
 [ext_resource type="PackedScene" uid="uid://4jvjgrar6mxd" path="res://assets/PUNT_Arena_1.glb" id="4_5tbcj"]
-[ext_resource type="Script" uid="uid://bo05d2wpmx1vr" path="res://scenes/levels/levelTest/death_plane.gd" id="5_ahoqo"]
+[ext_resource type="Script" uid="uid://bo05d2wpmx1vr" path="res://scenes/levels/level_test/death_plane.gd" id="5_ahoqo"]
 
 [sub_resource type="Environment" id="Environment_iurjo"]
 fog_enabled = true

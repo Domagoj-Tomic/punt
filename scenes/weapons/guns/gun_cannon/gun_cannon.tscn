@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://b5682cv8dco12"]
 
-[ext_resource type="Script" uid="uid://csd8k3civy18p" path="res://scenes/weapons/gunCannon/gun_cannon.gd" id="1_n4kd3"]
-[ext_resource type="Material" uid="uid://c2dh6pp3n7ndk" path="res://scenes/weapons/gunBase/weapon_material.tres" id="2_6ge2w"]
+[ext_resource type="Script" uid="uid://csd8k3civy18p" path="res://scenes/weapons/guns/gun_cannon/gun_cannon.gd" id="1_n4kd3"]
+[ext_resource type="Material" uid="uid://c2dh6pp3n7ndk" path="res://scenes/weapons/guns/gun_base/weapon_material.tres" id="2_6ge2w"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_53ank"]
 material = ExtResource("2_6ge2w")

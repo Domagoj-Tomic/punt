@@ -20,7 +20,7 @@ func close_all_menus():
 
 func return_to_main_menu():
 	close_all_menus()
-	_menu_stack = [open_menu("res://scenes/ui/menus/mainMenu/main_menu.tscn")]
+	_menu_stack = [open_menu("res://scenes/ui/menus/main_menu/main_menu.tscn")]
 
 
 func open_menu(path: String) -> Control:

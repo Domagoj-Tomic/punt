@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://dw32oaofjwhi6"]
 
-[ext_resource type="Script" uid="uid://xknmbuaatb10" path="res://scenes/ui/menus/mainMenu/main_buttons.gd" id="2_itaky"]
+[ext_resource type="Script" uid="uid://xknmbuaatb10" path="res://scenes/ui/menus/main_menu/main_buttons.gd" id="2_itaky"]
 [ext_resource type="Texture2D" uid="uid://bvqv1nlik8uff" path="res://assets/PUNT_logo.png" id="2_wbxlx"]
 
 [node name="MainMenu" type="Control" groups=["menu"]]
