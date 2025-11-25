@@ -1,0 +1,32 @@
+[gd_scene load_steps=5 format=3 uid="uid://b5682cv8dco12"]
+
+[ext_resource type="Script" uid="uid://csd8k3civy18p" path="res://scenes/weapons/gunCannon/gun_cannon.gd" id="1_n4kd3"]
+[ext_resource type="Material" uid="uid://c2dh6pp3n7ndk" path="res://scenes/weapons/gunBase/weapon_material.tres" id="2_6ge2w"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_53ank"]
+material = ExtResource("2_6ge2w")
+top_radius = 0.1
+bottom_radius = 0.15
+height = 1.5
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ntm2i"]
+radius = 0.2
+
+[node name="BaseGun" type="Node3D"]
+script = ExtResource("1_n4kd3")
+immediate_shapecast_update = true
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.9106855e-15, -4.371139e-08, 1, -1, -4.371139e-08, 0, 4.371139e-08, -1, -4.371139e-08, 0, 0, -0.75)
+mesh = SubResource("CylinderMesh_53ank")
+
+[node name="Chamber" type="Marker3D" parent="Mesh"]
+
+[node name="Muzzle" type="Marker3D" parent="Mesh/Chamber"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+
+[node name="ShapeCast3D" type="ShapeCast3D" parent="Mesh/Chamber"]
+transform = Transform3D(4.3711402e-08, 8.742277e-08, 1, -1.509958e-07, -1, 8.742278e-08, 1, -1.509958e-07, -4.371139e-08, 0, 0, 0)
+enabled = false
+shape = SubResource("SphereShape3D_ntm2i")
+target_position = Vector3(0, -0.75, 0)

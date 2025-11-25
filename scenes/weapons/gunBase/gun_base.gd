@@ -1,4 +1,4 @@
-extends Node3D
+@abstract extends Node3D
 class_name Gun
 
 
@@ -29,6 +29,10 @@ var is_firing: bool = false:
 
 
 func _ready() -> void:
+	var err_string = "A gun must have a chamber and a muzzle set."
+	if get_node_or_null(chamber_path) is not Marker3D: push_error(err_string)
+	if get_node_or_null(muzzle_path) is not Marker3D: push_error(err_string)
+
 	_refresh_onready_nodes()
 
 

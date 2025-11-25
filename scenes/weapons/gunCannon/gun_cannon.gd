@@ -2,7 +2,7 @@ extends Gun
 class_name Cannon
 
 # Projectile scene (weapon-specific)
-var projectileInstance = preload("res://scenes/weapons/projectileBase/projectile_base.tscn")
+var cannonball_instance = preload("res://scenes/weapons/projectileCannonball/projectile_cannonball.tscn")
 
 # Optional local ShapeCast (kept as a child node under Mesh/Chamber in the scene)
 @onready var shapeCast: ShapeCast3D = get_node_or_null("Mesh/Chamber/ShapeCast3D") as ShapeCast3D
@@ -21,13 +21,13 @@ func _on_start_firing() -> void:
 	fire_projectile()
 
 func fire_projectile() -> void:
-	if projectileInstance == null:
-		push_error("%s: projectileInstance is not set" % self)
+	if cannonball_instance == null:
+		push_error("%s: cannonball instance is not set" % self)
 		return
 
-	var projectile: Projectile = projectileInstance.instantiate() as Projectile
+	var projectile: Projectile = cannonball_instance.instantiate() as Projectile
 	if projectile == null:
-		push_error("%s: failed to instantiate projectileInstance" % self)
+		push_error("%s: failed to instantiate cannonball instance" % self)
 		return
 
 	var chamber_pos: Vector3 = get_chamber_global_position()

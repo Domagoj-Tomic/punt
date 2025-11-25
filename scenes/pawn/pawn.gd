@@ -11,6 +11,7 @@ signal pawn_changed_state(old_state: String)
 #region Character Export Group
 
 @export var input_enabled : bool = true
+@export var mass : float = 100
 
 #endregion
 

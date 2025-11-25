@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://d1c73821hexc1"]
 
-[ext_resource type="Script" uid="uid://bxi1t2hndju3l" path="res://scenes/weapons/projectileBase/projectile_base.gd" id="1_mpt2q"]
+[ext_resource type="Script" uid="uid://csbj00bvaqttu" path="res://scenes/weapons/projectileCannonball/projectile_cannonball.gd" id="1_rfecx"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_nt4n4"]
 friction = 0.0
@@ -21,7 +21,7 @@ gravity_scale = 0.0
 continuous_cd = true
 contact_monitor = true
 max_contacts_reported = 1
-script = ExtResource("1_mpt2q")
+script = ExtResource("1_rfecx")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("SphereShape3D_20g27")

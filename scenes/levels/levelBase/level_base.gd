@@ -1,8 +1,8 @@
-extends Node
+@abstract extends Node
 class_name Level
 
 
-@export var player_starts: Array[PlayerStart]
+@export var player_starts: Array
 
 
 func _ready() -> void:

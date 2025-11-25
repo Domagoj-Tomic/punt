@@ -1,4 +1,4 @@
-extends RigidBody3D
+@abstract extends RigidBody3D
 class_name Projectile
 
 
