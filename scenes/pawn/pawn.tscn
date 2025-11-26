@@ -1,14 +1,13 @@
-[gd_scene load_steps=28 format=3 uid="uid://brbisld7l2pcm"]
+[gd_scene load_steps=27 format=3 uid="uid://brbisld7l2pcm"]
 
 [ext_resource type="Script" uid="uid://bf32ish0yfh1j" path="res://scenes/pawn/gun_socket.gd" id="1_3ppau"]
 [ext_resource type="Script" uid="uid://blr1cvra03430" path="res://scenes/pawn/pawn.gd" id="1_dbje4"]
-[ext_resource type="Script" uid="uid://7m153bac28fj" path="res://scenes/pawn/pawn_mesh.gd" id="2_2du13"]
 [ext_resource type="Script" uid="uid://u5u7xxlvmcxx" path="res://scenes/pawn/debug.gd" id="2_dbje4"]
 [ext_resource type="Script" uid="uid://5abbpkidqnv4" path="res://scenes/pawn/movement_manager.gd" id="4_74r86"]
 [ext_resource type="Script" uid="uid://dqgoixychv3ds" path="res://scenes/pawn/health_manager.gd" id="5_2du13"]
 [ext_resource type="Script" uid="uid://baccftb3vict3" path="res://scenes/pawn/debug_tool.gd" id="6_i74ng"]
 [ext_resource type="Script" uid="uid://dimv5vi5q5kel" path="res://scenes/pawn/animation_manager.gd" id="8_i74ng"]
-[ext_resource type="Script" uid="uid://4dk30p6f4in0" path="res://scenes/playerController/player_controller.gd" id="9_65uxm"]
+[ext_resource type="Script" uid="uid://4dk30p6f4in0" path="res://scenes/player_controller/player_controller.gd" id="9_65uxm"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kp17n"]
 albedo_color = Color(0.909804, 0.596078, 0, 1)
@@ -391,10 +390,8 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0
 script = ExtResource("1_dbje4")
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 1, 0)
-top_level = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 mesh = SubResource("CapsuleMesh_74r86")
-script = ExtResource("2_2du13")
 
 [node name="Collision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

@@ -1,24 +1,19 @@
 extends Gun
 class_name Cannon
 
-# Projectile scene (weapon-specific)
-var cannonball_instance = preload("res://scenes/weapons/projectiles/projectile_cannonball/projectile_cannonball.tscn")
-
-# Optional local ShapeCast (kept as a child node under Mesh/Chamber in the scene)
-@onready var shapeCast: ShapeCast3D = get_node_or_null("Mesh/Chamber/ShapeCast3D") as ShapeCast3D
 
 @export var projectileVelocity: float = 50.0
 @export var resolve_overlap_with_shapecast: bool = true
 @export var immediate_shapecast_update: bool = false
 
-# When equipped, BaseGun.notify_equipped sets owning_character; call super to keep that behaviour.
-func notify_equipped(equipper: CharacterBody3D) -> void:
-	super.notify_equipped(equipper)
+var cannonball_instance = preload("res://scenes/weapons/projectiles/projectile_cannonball/projectile_cannonball.tscn")
 
-# Default behaviour on trigger start: fire once.
-# Override this in subclasses for auto/burst behaviour (e.g. start a timer or enable physics_process).
+@onready var shapeCast: ShapeCast3D = get_node_or_null("Mesh/Chamber/ShapeCast3D") as ShapeCast3D
+
+
 func _on_start_firing() -> void:
 	fire_projectile()
+
 
 func fire_projectile() -> void:
 	if cannonball_instance == null:

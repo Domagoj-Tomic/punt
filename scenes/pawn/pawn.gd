@@ -12,6 +12,8 @@ signal pawn_changed_state(old_state: String)
 
 @export var input_enabled : bool = true
 @export var mass : float = 100
+@export var impulse_scale: float = 1.0
+@export var physics_material: PhysicsMaterial
 
 #endregion
 
