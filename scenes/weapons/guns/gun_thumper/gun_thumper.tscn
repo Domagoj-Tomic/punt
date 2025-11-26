@@ -1,0 +1,54 @@
+[gd_scene load_steps=6 format=3 uid="uid://wt64r0ksjna4"]
+
+[ext_resource type="Script" uid="uid://dgyy3uk2nxxng" path="res://scenes/weapons/guns/gun_thumper/gun_thumper.gd" id="1_qnqsq"]
+[ext_resource type="Material" uid="uid://c2dh6pp3n7ndk" path="res://scenes/weapons/guns/gun_base/weapon_material.tres" id="2_j0q0h"]
+[ext_resource type="Texture2D" uid="uid://bh6sq3ol11ks2" path="res://assets/radial_progress_white.png" id="4_474qp"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_3wet2"]
+material = ExtResource("2_j0q0h")
+top_radius = 0.2
+bottom_radius = 0.1
+height = 1.2
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_3wet2"]
+radius = 1.0
+
+[node name="GunThumper" type="Node3D"]
+script = ExtResource("1_qnqsq")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.9106855e-15, -4.371139e-08, 1, -1, -4.371139e-08, 0, 4.371139e-08, -1, -4.371139e-08, 0, 0, -0.6)
+mesh = SubResource("CylinderMesh_3wet2")
+
+[node name="Chamber" type="Marker3D" parent="Mesh"]
+
+[node name="Muzzle" type="Marker3D" parent="Mesh/Chamber"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0.029)
+
+[node name="AreaOfEffect" type="ShapeCast3D" parent="Mesh/Chamber/Muzzle"]
+transform = Transform3D(4.3711402e-08, 8.742277e-08, 1, -1.509958e-07, -1, 8.742278e-08, 1, -1.509958e-07, -4.371139e-08, 0, 0, 0)
+enabled = false
+shape = SubResource("SphereShape3D_3wet2")
+target_position = Vector3(0, -1.2, 0)
+
+[node name="TextureProgressBar" type="TextureProgressBar" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -500.0
+offset_top = -500.0
+offset_right = 500.0
+offset_bottom = 500.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.1, 0.1)
+pivot_offset = Vector2(500, 500)
+max_value = 1.0
+step = 0.01
+fill_mode = 5
+radial_initial_angle = 270.0
+radial_fill_degrees = 180.0
+texture_progress = ExtResource("4_474qp")
+tint_progress = Color(1, 1, 1, 0.5019608)

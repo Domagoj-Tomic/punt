@@ -6,7 +6,6 @@ signal equipped(equipper)
 signal unequipped()
 
 
-@export var chamber_path: NodePath = NodePath("Mesh/Chamber")
 @export var muzzle_path: NodePath = NodePath("Mesh/Chamber/Muzzle")
 
 
@@ -24,20 +23,17 @@ var is_firing: bool = false:
 			_on_stop_firing()
 
 
-@onready var chamber: Marker3D = get_node_or_null(chamber_path) as Marker3D
 @onready var muzzle: Marker3D = get_node_or_null(muzzle_path) as Marker3D
 
 
 func _ready() -> void:
-	var err_string = "A gun must have a chamber and a muzzle set."
-	if get_node_or_null(chamber_path) is not Marker3D: push_error(err_string)
+	var err_string = "A gun must have a muzzle set."
 	if get_node_or_null(muzzle_path) is not Marker3D: push_error(err_string)
 
 	_refresh_onready_nodes()
 
 
 func _refresh_onready_nodes() -> void:
-	chamber = get_node_or_null(chamber_path) as Marker3D
 	muzzle = get_node_or_null(muzzle_path) as Marker3D
 
 
@@ -57,11 +53,6 @@ func notify_equipped(equipper: CharacterBody3D) -> void:
 func notify_unequipped() -> void:
 	owning_character = null
 	emit_signal("unequipped")
-
-
-# Safe position helpers (fallback to this node's global position if markers missing)
-func get_chamber_global_position() -> Vector3:
-	return chamber.global_position if chamber else global_position
 
 
 func get_muzzle_global_position() -> Vector3:

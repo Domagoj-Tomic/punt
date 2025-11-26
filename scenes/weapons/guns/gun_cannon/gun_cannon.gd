@@ -5,10 +5,11 @@ class_name Cannon
 @export var projectileVelocity: float = 50.0
 @export var resolve_overlap_with_shapecast: bool = true
 @export var immediate_shapecast_update: bool = false
+@export var max_back_distance: float = 0.75
 
 var cannonball_instance = preload("res://scenes/weapons/projectiles/projectile_cannonball/projectile_cannonball.tscn")
 
-@onready var shapeCast: ShapeCast3D = get_node_or_null("Mesh/Chamber/ShapeCast3D") as ShapeCast3D
+@onready var shapeCast: ShapeCast3D = get_node_or_null("Mesh/ShapeCast3D") as ShapeCast3D
 
 
 func _on_start_firing() -> void:
@@ -25,19 +26,15 @@ func fire_projectile() -> void:
 		push_error("%s: failed to instantiate cannonball instance" % self)
 		return
 
-	var chamber_pos: Vector3 = get_chamber_global_position()
 	var muzzle_pos: Vector3 = get_muzzle_global_position()
-	var aim_dir: Vector3 = (muzzle_pos - chamber_pos).normalized()
+	var aim_dir: Vector3 = muzzle.global_transform.basis.y
 
-	# ShapeCast logic if present in the scene
-	if shapeCast:
-		shapeCast.clear_exceptions()
-		if owning_character:
-			shapeCast.add_exception(owning_character)
-		shapeCast.target_position = shapeCast.to_local(muzzle_pos)
+	shapeCast.clear_exceptions()
+	if owning_character:
+		shapeCast.add_exception(owning_character)
+	shapeCast.target_position = shapeCast.to_local(muzzle_pos)
 
-		if immediate_shapecast_update:
-			shapeCast.force_shapecast_update()
+	shapeCast.force_shapecast_update()
 
 	var spawn_pos: Vector3 = muzzle_pos
 	if shapeCast and shapeCast.is_colliding():
@@ -58,11 +55,6 @@ func _resolve_overlap(initial_pos: Vector3, aim_dir: Vector3, projectile_scene: 
 	var proj_radius: float = _get_projectile_collision_radius(projectile_scene)
 	if proj_radius <= 0.0:
 		proj_radius = 0.2
-
-	var max_back_distance: float = 1.0
-	# if both chamber and muzzle exist, compute their distance for a reasonable max back distance
-	if chamber and muzzle:
-		max_back_distance = (muzzle.global_position - chamber.global_position).length()
 
 	var step: float = max(proj_radius * 0.25, 0.01)
 	var pos: Vector3 = initial_pos
