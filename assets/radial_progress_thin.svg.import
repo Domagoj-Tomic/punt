@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c705lbglpeakc"
-path="res://.godot/imported/radial_progress_outline.png-7d2e3562c40b0069531d054da284a98d.ctex"
+uid="uid://xcquclpvjh4s"
+path="res://.godot/imported/radial_progress_thin.svg-52f54724ec1995255aad09f7c941ce92.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/radial_progress_outline.png"
-dest_files=["res://.godot/imported/radial_progress_outline.png-7d2e3562c40b0069531d054da284a98d.ctex"]
+source_file="res://assets/radial_progress_thin.svg"
+dest_files=["res://.godot/imported/radial_progress_thin.svg-52f54724ec1995255aad09f7c941ce92.ctex"]
 
 [params]
 
@@ -38,3 +38,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
+svg/scale=1.0
+editor/scale_with_editor_scale=false
+editor/convert_colors_with_editor_theme=false

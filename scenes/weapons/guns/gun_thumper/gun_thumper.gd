@@ -24,17 +24,17 @@ func _physics_process(delta: float) -> void:
 	if is_firing:
 		if _precharge_perc < 1.0:
 			_precharge_perc = move_toward(_precharge_perc, 1.0, delta / precharge_time)
-			$Container/ChargeBar1.value = _precharge_perc
+			$ChargeBars/ChargeBar1.value = _precharge_perc
 		elif _charge_perc < 1.0:
 			_charge_perc = move_toward(_charge_perc, 1.0, delta / main_charge_time)
-			$Container/ChargeBar2.value = _charge_perc
+			$ChargeBars/ChargeBar2.value = _charge_perc
 	else:
 		if _charge_perc > 0.0:
 			_charge_perc = move_toward(_charge_perc, 00., delta * uncharge_factor / main_charge_time)
-			$Container/ChargeBar2.value = _charge_perc
+			$ChargeBars/ChargeBar2.value = _charge_perc
 		elif _precharge_perc > 0.0:
 			_precharge_perc = move_toward(_precharge_perc, 0.0, delta * uncharge_factor / precharge_time)
-			$Container/ChargeBar1.value = _precharge_perc
+			$ChargeBars/ChargeBar1.value = _precharge_perc
 
 
 
@@ -58,5 +58,5 @@ func _on_stop_firing() -> void:
 
 	_precharge_perc = 0
 	_charge_perc = 0
-	$Container/ChargeBar1.value = _precharge_perc
-	$Container/ChargeBar2.value = _charge_perc
+	$ChargeBars/ChargeBar1.value = _precharge_perc
+	$ChargeBars/ChargeBar2.value = _charge_perc
