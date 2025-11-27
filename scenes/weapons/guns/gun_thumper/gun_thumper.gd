@@ -28,11 +28,7 @@ func _physics_process(delta: float) -> void:
 		elif _charge_perc < 1.0:
 			_charge_perc = move_toward(_charge_perc, 1.0, delta / main_charge_time)
 			$ChargeBars/ChargeBar2.value = _charge_perc
-	else:
-		if _charge_perc > 0.0:
-			_charge_perc = move_toward(_charge_perc, 00., delta * uncharge_factor / main_charge_time)
-			$ChargeBars/ChargeBar2.value = _charge_perc
-		elif _precharge_perc > 0.0:
+	elif _charge_perc == 0.0:
 			_precharge_perc = move_toward(_precharge_perc, 0.0, delta * uncharge_factor / precharge_time)
 			$ChargeBars/ChargeBar1.value = _precharge_perc
 
