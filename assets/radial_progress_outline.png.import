@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bh6sq3ol11ks2"
-path="res://.godot/imported/radial_progress_white.png-4a80b3732567674af04a2ee4e6cf05ed.ctex"
+uid="uid://c705lbglpeakc"
+path="res://.godot/imported/radial_progress_outline.png-7d2e3562c40b0069531d054da284a98d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/radial_progress_white.png"
-dest_files=["res://.godot/imported/radial_progress_white.png-4a80b3732567674af04a2ee4e6cf05ed.ctex"]
+source_file="res://assets/radial_progress_outline.png"
+dest_files=["res://.godot/imported/radial_progress_outline.png-7d2e3562c40b0069531d054da284a98d.ctex"]
 
 [params]
 

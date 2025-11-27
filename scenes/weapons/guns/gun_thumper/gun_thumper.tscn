@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://wt64r0ksjna4"]
+[gd_scene load_steps=7 format=3 uid="uid://wt64r0ksjna4"]
 
 [ext_resource type="Script" uid="uid://dgyy3uk2nxxng" path="res://scenes/weapons/guns/gun_thumper/gun_thumper.gd" id="1_qnqsq"]
 [ext_resource type="Material" uid="uid://c2dh6pp3n7ndk" path="res://scenes/weapons/guns/gun_base/weapon_material.tres" id="2_j0q0h"]
-[ext_resource type="Texture2D" uid="uid://bh6sq3ol11ks2" path="res://assets/radial_progress_white.png" id="4_474qp"]
+[ext_resource type="Texture2D" uid="uid://c705lbglpeakc" path="res://assets/radial_progress_outline.png" id="3_y1fdl"]
+[ext_resource type="Texture2D" uid="uid://b8x5knrwsptja" path="res://assets/radial_progress.png" id="4_474qp"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_3wet2"]
 material = ExtResource("2_j0q0h")
@@ -31,24 +32,34 @@ enabled = false
 shape = SubResource("SphereShape3D_3wet2")
 target_position = Vector3(0, -1.2, 0)
 
-[node name="TextureProgressBar" type="TextureProgressBar" parent="."]
+[node name="Container" type="Control" parent="."]
+layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -500.0
-offset_top = -500.0
-offset_right = 500.0
-offset_bottom = 500.0
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(0.1, 0.1)
-pivot_offset = Vector2(500, 500)
+
+[node name="TextureProgressBar" type="TextureProgressBar" parent="Container"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -1000.0
+offset_top = -1000.0
+offset_right = 1000.0
+offset_bottom = 1000.0
+grow_horizontal = 2
+grow_vertical = 2
 max_value = 1.0
 step = 0.01
 fill_mode = 5
 radial_initial_angle = 270.0
 radial_fill_degrees = 180.0
+texture_under = ExtResource("3_y1fdl")
 texture_progress = ExtResource("4_474qp")
-tint_progress = Color(1, 1, 1, 0.5019608)

@@ -39,6 +39,7 @@ camera_attributes = SubResource("CameraAttributesPractical_1p0p1")
 [node name="RigidBody3D" type="RigidBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 4.196989, 0)
 physics_material_override = SubResource("PhysicsMaterial_iaocn")
+continuous_cd = true
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D"]
 mesh = SubResource("SphereMesh_hwv7p")
@@ -63,12 +64,12 @@ debug_color = Color(0.84135777, 0.0010009271, 0.9074187, 0.41960785)
 transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 0, 3.1160717)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
 shape = SubResource("BoxShape3D_2hfwj")
 debug_color = Color(0.8326753, 0.0013765395, 0.94073117, 0.41960785)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.297359, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
 mesh = SubResource("BoxMesh_jaywt")
 
 [connection signal="body_entered" from="DeathPlane" to="DeathPlane" method="_on_body_entered"]
