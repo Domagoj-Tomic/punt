@@ -2,11 +2,12 @@ extends Gun
 class_name Thumper
 
 
-@export var max_impulse: float = 100
-@export var min_impulse: float = 50
-@export_range(0, 3, 0.1) var precharge_time: float = 1
+@export var max_impulse: float = 100.0
+@export var min_impulse: float = 50.0
+@export_range(0, 2000, 100) var disable_air_control_milliseconds: int = 1000
+@export_range(0, 3, 0.1) var precharge_time: float = 1.0
 @export_range(0, 3, 0.1, "or_greater") var main_charge_time: float = 1.5
-@export_range(0, 3, 0.1, "or_greater") var uncharge_factor: float = 1
+@export_range(0, 3, 0.1, "or_greater") var uncharge_factor: float = 1.0
 
 var _precharge_perc: float = 0
 var _charge_perc: float = 0
@@ -48,6 +49,8 @@ func _on_stop_firing() -> void:
 		if aoe.get_collider(i) is CharacterBody3D:
 			var body: CharacterBody3D = aoe.get_collider(i)
 			body.velocity += force * force_direction
+			if body is Pawn:
+				body.disable_air_control(disable_air_control_milliseconds)
 		elif aoe.get_collider(i) is RigidBody3D:
 			var body: RigidBody3D = aoe.get_collider(i)
 			body.apply_impulse(force * force_direction)

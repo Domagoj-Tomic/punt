@@ -30,7 +30,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0.029)
 transform = Transform3D(4.3711402e-08, 8.742277e-08, 1, -1.509958e-07, -1, 8.742278e-08, 1, -1.509958e-07, -4.371139e-08, 0, 0, 0)
 enabled = false
 shape = SubResource("SphereShape3D_3wet2")
-target_position = Vector3(0, -1.2, 0)
+target_position = Vector3(0, -2.5, 0)
 
 [node name="ChargeBars" type="Control" parent="."]
 layout_mode = 3

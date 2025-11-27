@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://brbisld7l2pcm"]
+[gd_scene load_steps=26 format=3 uid="uid://brbisld7l2pcm"]
 
 [ext_resource type="Script" uid="uid://bf32ish0yfh1j" path="res://scenes/pawn/gun_socket.gd" id="1_3ppau"]
 [ext_resource type="Script" uid="uid://blr1cvra03430" path="res://scenes/pawn/pawn.gd" id="1_dbje4"]
@@ -7,7 +7,6 @@
 [ext_resource type="Script" uid="uid://dqgoixychv3ds" path="res://scenes/pawn/health_manager.gd" id="5_2du13"]
 [ext_resource type="Script" uid="uid://baccftb3vict3" path="res://scenes/pawn/debug_tool.gd" id="6_i74ng"]
 [ext_resource type="Script" uid="uid://dimv5vi5q5kel" path="res://scenes/pawn/animation_manager.gd" id="8_i74ng"]
-[ext_resource type="Script" uid="uid://4dk30p6f4in0" path="res://scenes/player_controller/player_controller.gd" id="9_65uxm"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kp17n"]
 albedo_color = Color(0.909804, 0.596078, 0, 1)
@@ -467,9 +466,3 @@ script = ExtResource("8_i74ng")
 HEADBOB_ANIMATION = NodePath("../Head/HeadbobAnimation")
 JUMP_ANIMATION = NodePath("../Head/JumpAnimation")
 CROUCH_ANIMATION = NodePath("../CrouchAnimation")
-
-[node name="PlayerController" type="Node3D" parent="."]
-process_mode = 3
-script = ExtResource("9_65uxm")
-reticle_resource = "uid://coqpusufa8a6k"
-metadata/_custom_type_script = "uid://4dk30p6f4in0"

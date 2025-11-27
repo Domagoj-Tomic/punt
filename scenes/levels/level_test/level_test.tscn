@@ -1,9 +1,10 @@
-[gd_scene load_steps=13 format=3 uid="uid://cp1fi0shlidoc"]
+[gd_scene load_steps=14 format=3 uid="uid://cp1fi0shlidoc"]
 
 [ext_resource type="Script" uid="uid://0mi0rrv7ipbd" path="res://scenes/levels/level_test/level_test.gd" id="2_5tbcj"]
 [ext_resource type="PackedScene" uid="uid://bs3pfxl3fj6un" path="res://scenes/levels/reusable_objects/player_start/player_start.tscn" id="3_anjyw"]
 [ext_resource type="PackedScene" uid="uid://4jvjgrar6mxd" path="res://assets/PUNT_Arena_1.glb" id="4_5tbcj"]
 [ext_resource type="Script" uid="uid://bo05d2wpmx1vr" path="res://scenes/levels/level_test/death_plane.gd" id="5_ahoqo"]
+[ext_resource type="PackedScene" uid="uid://cisemywgijufa" path="res://scenes/levels/reusable_objects/acceleration_pad/acceleration_pad.tscn" id="5_jaywt"]
 
 [sub_resource type="Environment" id="Environment_iurjo"]
 fog_enabled = true
@@ -71,6 +72,9 @@ debug_color = Color(0.8326753, 0.0013765395, 0.94073117, 0.41960785)
 [node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
 mesh = SubResource("BoxMesh_jaywt")
+
+[node name="AccelerationPad" parent="." instance=ExtResource("5_jaywt")]
+transform = Transform3D(1.0000004, 0, 0, 0, 0.73923177, -0.67345136, 0, 0.6734515, 0.73923165, 2.5640604, 0.6948667, -3.5722628)
 
 [connection signal="body_entered" from="DeathPlane" to="DeathPlane" method="_on_body_entered"]
 

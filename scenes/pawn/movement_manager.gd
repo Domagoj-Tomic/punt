@@ -11,17 +11,23 @@ var pawn: Pawn
 @export var sprint_speed : float = base_speed * 2
 @export var crouch_speed : float = 3.0
 @export var acceleration : float = 10.0
-@export var jump_velocity : float = 7
-## Grace period (seconds) after leaving a platform during which a jump input still registers.
-@export_range(0, 1, 0.05, "or_greater") var coyote_time: float = 0.2
-## Grace period (seconds) before landing during which a jump input still registers.
-@export_range(0, 1, 0.05, "or_greater") var jump_buffer : float = 0.1
+@export var jump_velocity : float = 7.0
+## How soon can the "no air control" debuff be cleared by touching the ground
+@export_range(0, 1000, 100, "or_greater") var no_air_control_recovery_time : int = 500
+## Horizontal speed at which the "no air control" debuff is cleared
+@export_range(0, 10, 1, "or_greater") var no_air_control_recovery_speed : float = 2.0
+## Grace period (milliseconds) after leaving a platform during which a jump input still registers.
+@export_range(0, 1000, 50, "or_greater") var coyote_time: int = 200
+## Grace period (milliseconds) before landing during which a jump input still registers.
+@export_range(0, 1000, 50, "or_greater") var jump_buffer : int = 100
 ## Value of 0 disables jumping, values greater than 1 allow air jumps.
 @export_range(0, 10, 1, "or_greater") var number_of_jumps : int = 2
 ## Scale factor for horizontal acceleration when the pawn is in the air.[br]
 ## 0.0 = no aerial control (can't change horizontal velocity in the air).[br]
 ## 1.0 = full control (same horizontal acceleration as on ground).
-@export_range(0, 1, 0.1, "or_greater") var air_control : float = 1
+@export_range(0, 1, 0.1, "or_greater") var air_control : float = 0.4
+## While in air, horizontal velocity will be multiplied by (1 - horizontal_damping * delta) each frame.
+@export_range(0, 1, 0.05) var horizontal_damping : float = 0.1
 
 #endregion
 
@@ -45,8 +51,13 @@ var _current_max_speed : float = base_speed
 var _state : String = "normal"
 var _low_ceiling : bool = false
 var _jumps_remaining : int
-var _buffer_deadline : float
+var _buffer_deadline : int
 var _valid_states : Array[String] = ["normal", "crouching", "sprinting"]
+var _no_air_control_until: int:
+	set(value):
+		_no_air_control_until = value
+		_no_air_control_timestamp = Time.get_ticks_msec()
+var _no_air_control_timestamp: int
 
 var RETICLE : Control
 
@@ -99,7 +110,7 @@ func manage_pawn_movement(delta):
 	var moving = desired_input_dir != Vector2.ZERO
 	handle_movement(delta, desired_input_dir, pawn.head_yaw)
 
-	handle_head_rotation()
+	_handle_head_rotation()
 
 	_low_ceiling = $CrouchCeilingDetection.is_colliding()
 
@@ -123,23 +134,24 @@ func handle_jumping(delta: float):
 		return
 
 	if pawn.is_on_floor():
-		if pawn._air_time > 0:
+		if pawn._air_time_ms > 0:
 			pawn.pawn_landed.emit()
-		pawn._air_time = 0
+		pawn._air_time_ms = 0
 		_jumps_remaining = number_of_jumps
 		if input_jump_just_pressed:
 			_jmp.call()
-		elif _buffer_deadline > (Time.get_ticks_msec() / 1000.0):
+		elif _buffer_deadline > Time.get_ticks_msec():
 			_jmp.call()
 	else:
-		if pawn._air_time >= coyote_time and _jumps_remaining == number_of_jumps:
+		if pawn._air_time_ms >= coyote_time and _jumps_remaining == number_of_jumps:
 			_jumps_remaining -= 1	# remove a jump when falling off ledge
-		pawn._air_time += delta
-		if input_jump_just_pressed:
+		pawn._air_time_ms += delta
+		if input_jump_just_pressed: # air jump
 			if _jumps_remaining > 0:
 				_jmp.call()
+				_handle_no_air_control(true)
 			else:
-				_buffer_deadline = jump_buffer + (Time.get_ticks_msec() / 1000.0)
+				_buffer_deadline = jump_buffer + Time.get_ticks_msec()
 
 
 func handle_movement(delta, input_dir: Vector2, head_y: float):
@@ -151,13 +163,28 @@ func handle_movement(delta, input_dir: Vector2, head_y: float):
 		pawn.velocity.x = lerp(pawn.velocity.x, direction.x * _current_max_speed, acceleration * delta)
 		pawn.velocity.z = lerp(pawn.velocity.z, direction.z * _current_max_speed, acceleration * delta)
 	else:
-		pawn.velocity.x = lerp(pawn.velocity.x, direction.x * base_speed, acceleration * delta * air_control)
-		pawn.velocity.z = lerp(pawn.velocity.z, direction.z * base_speed, acceleration * delta * air_control)
+		if _no_air_control_until < Time.get_ticks_msec() and direction.length() > 0:
+			pawn.velocity.x = lerp(pawn.velocity.x, direction.x * base_speed, acceleration * delta * air_control)
+			pawn.velocity.z = lerp(pawn.velocity.z, direction.z * base_speed, acceleration * delta * air_control)
+		pawn.velocity.x *= 1 - horizontal_damping * delta
+		pawn.velocity.z *= 1 - horizontal_damping * delta
 
+	_handle_no_air_control()
 	pawn.move_and_slide()
 
 
-func handle_head_rotation():
+func _handle_no_air_control(clear:bool = false):
+	if clear:
+		_no_air_control_until = 0
+	elif Vector2(pawn.velocity.x, pawn.velocity.z).length() <= no_air_control_recovery_speed:
+				_no_air_control_until = 0
+	elif pawn._air_time_ms > 0:
+		if pawn.is_on_floor():
+			if _no_air_control_timestamp < no_air_control_recovery_time + Time.get_ticks_msec():
+				_no_air_control_until = 0
+
+
+func _handle_head_rotation():
 	if not HEAD:
 		return
 
@@ -165,6 +192,10 @@ func handle_head_rotation():
 	HEAD.rotation_degrees.x -= look_input.y
 
 	HEAD.rotation.x = clamp(HEAD.rotation.x, deg_to_rad(-90), deg_to_rad(90))
+
+
+func disable_air_control(duration_ms: int):
+	_no_air_control_until = duration_ms + Time.get_ticks_msec()
 
 
 #region State Handling

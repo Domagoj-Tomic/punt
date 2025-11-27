@@ -13,13 +13,13 @@ signal pawn_changed_state(old_state: String)
 @export var input_enabled : bool = true
 @export var mass : float = 100
 @export var impulse_scale: float = 1.0
-@export var physics_material: PhysicsMaterial
 
 #endregion
 
 #region Member Variable Initialization
 
-var _air_time: float = 0
+var _air_time_ms: float = 0
+
 
 @onready var Head : Node3D = $Head
 @onready var Camera : Camera3D = $Head/Camera
@@ -42,6 +42,7 @@ func _ready():
 	health_manager = $HealthManager
 	animation_manager = $AnimationManager
 	debug_tool = $DebugTool
+	Camera.make_current()
 
 
 func _physics_process(delta):
