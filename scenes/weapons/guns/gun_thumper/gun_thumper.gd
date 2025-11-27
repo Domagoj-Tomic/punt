@@ -4,10 +4,11 @@ class_name Thumper
 
 @export var max_impulse: float = 100
 @export var min_impulse: float = 50
-@export var min_charge_percent: float = 0.5
-@export var full_charge_time: float = 2.5
-@export var full_uncharge_time: float = 1
+@export_range(0, 3, 0.1) var precharge_time: float = 1
+@export_range(0, 3, 0.1, "or_greater") var main_charge_time: float = 1.5
+@export_range(0, 3, 0.1, "or_greater") var uncharge_factor: float = 1
 
+var _precharge_perc: float = 0
 var _charge_perc: float = 0
 
 @onready var aoe = $Mesh/Chamber/Muzzle/AreaOfEffect
@@ -21,22 +22,29 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	if is_firing:
-		_charge_perc += delta / full_charge_time
+		if _precharge_perc < 1.0:
+			_precharge_perc = move_toward(_precharge_perc, 1.0, delta / precharge_time)
+			$Container/ChargeBar1.value = _precharge_perc
+		elif _charge_perc < 1.0:
+			_charge_perc = move_toward(_charge_perc, 1.0, delta / main_charge_time)
+			$Container/ChargeBar2.value = _charge_perc
 	else:
-		_charge_perc -= delta / full_uncharge_time
-	_charge_perc = clamp(_charge_perc, 0, 1)
-	$Container/TextureProgressBar.value = _charge_perc
+		if _charge_perc > 0.0:
+			_charge_perc = move_toward(_charge_perc, 00., delta * uncharge_factor / main_charge_time)
+			$Container/ChargeBar2.value = _charge_perc
+		elif _precharge_perc > 0.0:
+			_precharge_perc = move_toward(_precharge_perc, 0.0, delta * uncharge_factor / precharge_time)
+			$Container/ChargeBar1.value = _precharge_perc
 
-	$Container/TextureProgressBar.tint_progress = Color(1, 1, 1, _charge_perc)
-	$Container/TextureProgressBar.tint_under = Color(1, 1, 1, _charge_perc)
+
+
 
 
 func _on_stop_firing() -> void:
-	if _charge_perc < min_charge_percent:
+	if _precharge_perc < 1:
 		return
 
-	var chrg: float = (_charge_perc - min_charge_percent) / (1 - min_charge_percent)
-	var force: float = min_impulse + max_impulse * chrg
+	var force: float = min_impulse + max_impulse * _charge_perc
 	var force_direction: Vector3 = -global_transform.basis.z
 
 	aoe.force_shapecast_update()
@@ -48,4 +56,7 @@ func _on_stop_firing() -> void:
 			var body: RigidBody3D = aoe.get_collider(i)
 			body.apply_impulse(force * force_direction)
 
+	_precharge_perc = 0
 	_charge_perc = 0
+	$Container/ChargeBar1.value = _precharge_perc
+	$Container/ChargeBar2.value = _charge_perc
