@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bs3pfxl3fj6un"]
 
-[ext_resource type="Texture2D" uid="uid://d2gr1rbac8lk" path="res://assets/PUNT_PlayerStart_billboard.png" id="1_ehr6f"]
+[ext_resource type="Texture2D" uid="uid://bkaii6o7mdxsf" path="res://assets/PUNT_PlayerStart_billboard.png" id="1_ehr6f"]
 [ext_resource type="Script" uid="uid://4idpiui1lli5" path="res://scenes/levels/reusable_objects/player_start/player_start.gd" id="2_ehr6f"]
 
 [node name="PlayerStart" type="Node3D" groups=["player_start"]]

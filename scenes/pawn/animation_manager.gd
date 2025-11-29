@@ -11,7 +11,7 @@ class_name PawnAnimationManager
 @export var jump_animation : bool = true
 
 var pawn: Pawn
-var Camera: Camera3D
+var remote_transform: RemoteTransform3D
 var movement_manager: PawnMovementManager
 
 
@@ -28,12 +28,16 @@ func _ready() -> void:
 	if CROUCH_ANIMATION:
 		CROUCH_ANIMATION.play("RESET")
 
-	Camera = pawn.get_node("Head/Camera")
-	movement_manager = pawn.get_node("MovementManager")
-
+	pawn.pawn_possessed.connect(_get_pawn_component_references)
 	pawn.pawn_jumped.connect(_play_jump_animation)
 	pawn.pawn_landed.connect(_play_landing_animation)
 	pawn.pawn_changed_state.connect(_animate_change_in_state)
+
+
+func _get_pawn_component_references(_playercontroller):
+	if pawn.player_controller:
+		remote_transform = pawn.RemoteTransform
+		movement_manager = pawn.movement_manager
 
 
 func _animate_change_in_state(old_state: String, new_state: String):
@@ -44,8 +48,8 @@ func _animate_change_in_state(old_state: String, new_state: String):
 
 
 func _play_landing_animation():
-	if pawn.Camera:
-		var facing_direction : Vector3 = Camera.get_global_transform().basis.x
+	if remote_transform:
+		var facing_direction : Vector3 = remote_transform.get_global_transform().basis.x
 		var facing_direction_2D : Vector2 = Vector2(facing_direction.x, facing_direction.z).normalized()
 		var velocity_2D : Vector2 = Vector2(pawn.velocity.x, pawn.velocity.z).normalized()
 		var side_landed : int = round(velocity_2D.dot(facing_direction_2D))
@@ -64,7 +68,8 @@ func _play_jump_animation():
 
 func play_headbob_animation(moving):
 	if not HEADBOB_ANIMATION:
-		return
+		if not movement_manager:
+			return
 
 	if moving and pawn.is_on_floor():
 		var use_headbob_animation : String = "walk"

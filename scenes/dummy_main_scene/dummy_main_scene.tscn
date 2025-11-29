@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://xyo13qlmmeqp"]
+
+[ext_resource type="Script" uid="uid://dltip2t1j06hv" path="res://scenes/dummy_main_scene/dummy_main_scene.gd" id="1_qo85l"]
+
+[node name="DummyMainScene" type="Node"]
+script = ExtResource("1_qo85l")

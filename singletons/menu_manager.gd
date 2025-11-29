@@ -5,10 +5,6 @@ var _menu_stack: Array[Control]
 
 
 func _ready() -> void:
-	var menus: Array[Node] = get_tree().get_nodes_in_group("menu")
-	for menu  in menus:
-		if menu.name == "MainMenu":
-			_menu_stack = [menu]
 	return_to_main_menu()
 
 

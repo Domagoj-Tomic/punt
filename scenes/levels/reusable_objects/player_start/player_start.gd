@@ -2,8 +2,7 @@ extends Node
 class_name PlayerStart
 
 
-var pawn_res = load("res://scenes/pawn/pawn.tscn")
-var player_controller_res = load("res://scenes/player_controller/player_controller.tscn")
+var pawn_res: PackedScene = load("res://scenes/pawn/pawn.tscn")
 
 
 func _ready() -> void:
@@ -11,11 +10,9 @@ func _ready() -> void:
 
 
 func spawn_player(level: Level) -> Pawn:
-	var player: Pawn = pawn_res.instantiate()
-	var player_controller: PlayerController = player_controller_res.instantiate()
-
-	level.add_child(player)
-	if not player.has_node("PlayerController"):
-		player.add_child(player_controller)
-	player.position = self.position
-	return player
+	var pawn: Pawn = pawn_res.instantiate()
+	level.add_child(pawn)
+	if ViewportManager.get_viewports_remaining() > 0:
+		var _player_controller: PlayerController = PlayerController.new(pawn)
+	pawn.position = self.position
+	return pawn

@@ -9,9 +9,11 @@ func _ready() -> void:
 
 
 func  _start_game():
+	ViewportManager.viewport_count = 4
 	LevelManager.load_level("res://scenes/levels/level_test/level_test.tscn")
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	MenuManager.close_all_menus()
+
 
 
 func  _options():

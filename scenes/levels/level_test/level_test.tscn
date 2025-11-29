@@ -27,7 +27,7 @@ size = Vector3(10, 2, 0.2)
 [sub_resource type="BoxMesh" id="BoxMesh_jaywt"]
 size = Vector3(10, 2, 0.2)
 
-[node name="Node3D" type="Node3D"]
+[node name="LevelTest" type="Node3D"]
 script = ExtResource("2_5tbcj")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]

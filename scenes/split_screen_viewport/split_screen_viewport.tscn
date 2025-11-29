@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://cbn6gdqom4wsb"]
+
+[ext_resource type="Script" uid="uid://c0whi605j8a5h" path="res://scenes/split_screen_viewport/split_screen_viewport.gd" id="1_jxypq"]
+
+[node name="SplitScreenViewport" type="SubViewportContainer"]
+offset_right = 1000.0
+offset_bottom = 512.0
+script = ExtResource("1_jxypq")
+
+[node name="SubViewport" type="SubViewport" parent="."]
+handle_input_locally = false
+size = Vector2i(1000, 512)
+render_target_update_mode = 4
+
+[node name="Camera3D" type="Camera3D" parent="SubViewport"]
+top_level = true

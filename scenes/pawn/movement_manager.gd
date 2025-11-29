@@ -12,21 +12,22 @@ var pawn: Pawn
 @export var crouch_speed : float = 3.0
 @export var acceleration : float = 10.0
 @export var jump_velocity : float = 7.0
-## How soon can the "no air control" debuff be cleared by touching the ground
+## How soon can the "no air control" debuff be cleared by touching the ground, in milliseconds
 @export_range(0, 1000, 100, "or_greater") var no_air_control_recovery_time : int = 500
 ## Horizontal speed at which the "no air control" debuff is cleared
 @export_range(0, 10, 1, "or_greater") var no_air_control_recovery_speed : float = 2.0
 ## Grace period (milliseconds) after leaving a platform during which a jump input still registers.
-@export_range(0, 1000, 50, "or_greater") var coyote_time: int = 200
+@export_range(0, 1000, 50) var coyote_time: int = 200
 ## Grace period (milliseconds) before landing during which a jump input still registers.
-@export_range(0, 1000, 50, "or_greater") var jump_buffer : int = 100
+@export_range(0, 1000, 50) var jump_buffer : int = 100
 ## Value of 0 disables jumping, values greater than 1 allow air jumps.
-@export_range(0, 10, 1, "or_greater") var number_of_jumps : int = 2
+@export var number_of_jumps : int = 2
 ## Scale factor for horizontal acceleration when the pawn is in the air.[br]
 ## 0.0 = no aerial control (can't change horizontal velocity in the air).[br]
 ## 1.0 = full control (same horizontal acceleration as on ground).
-@export_range(0, 1, 0.1, "or_greater") var air_control : float = 0.4
-## While in air, horizontal velocity will be multiplied by (1 - horizontal_damping * delta) each frame.
+@export_range(0, 1, 0.05) var air_control : float = 0.15
+## While in air, horizontal velocity will be multiplied by (1 - horizontal_damping * delta) each frame. [br]
+## This is [i]not[/i] the same as linear damping used elswhere in the engine.
 @export_range(0, 1, 0.05) var horizontal_damping : float = 0.1
 
 #endregion
@@ -64,7 +65,6 @@ var RETICLE : Control
 var gravity : float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 var HEAD : Node3D
-var CAMERA : Camera3D
 var animation_manager : PawnAnimationManager
 var player_controller: PlayerController
 
@@ -88,13 +88,15 @@ func _ready() -> void:
 	else:
 		push_error("Direct parent must be a Pawn")
 
-	HEAD = pawn.get_node("Head")
-	CAMERA = pawn.get_node("Head/Camera")
-	animation_manager = pawn.get_node("AnimationManager")
-	if pawn.has_node("PlayerController"):
-		player_controller = pawn.get_node("PlayerController")
+	pawn.ready.connect(_assign_component_variables)
 
 	$CrouchCeilingDetection.add_exception(pawn)
+
+
+func _assign_component_variables():
+	HEAD = pawn.Head
+	animation_manager = pawn.get_node("AnimationManager")
+	player_controller = pawn.player_controller
 
 
 func manage_pawn_movement(delta):
@@ -142,6 +144,7 @@ func handle_jumping(delta: float):
 			_jmp.call()
 		elif _buffer_deadline > Time.get_ticks_msec():
 			_jmp.call()
+			_buffer_deadline = 0
 	else:
 		if pawn._air_time_ms >= coyote_time and _jumps_remaining == number_of_jumps:
 			_jumps_remaining -= 1	# remove a jump when falling off ledge

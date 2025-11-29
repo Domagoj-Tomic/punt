@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="PUNT"
-run/main_scene="uid://dw32oaofjwhi6"
+run/main_scene="uid://xyo13qlmmeqp"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 LevelManager="*res://singletons/level_manager.gd"
 MenuManager="*res://singletons/menu_manager.gd"
+ViewportManager="*res://singletons/viewport_manager.gd"
 
 [display]
 

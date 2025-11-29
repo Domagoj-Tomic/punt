@@ -50,7 +50,7 @@ func _on_stop_firing() -> void:
 			var body: CharacterBody3D = aoe.get_collider(i)
 			body.velocity += force * force_direction
 			if body is Pawn:
-				body.disable_air_control(disable_air_control_milliseconds)
+				body.movement_manager.disable_air_control(disable_air_control_milliseconds)
 		elif aoe.get_collider(i) is RigidBody3D:
 			var body: RigidBody3D = aoe.get_collider(i)
 			body.apply_impulse(force * force_direction)

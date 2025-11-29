@@ -21,7 +21,7 @@ class_name PlayerController
 	WEAPON3 = "select_weapon_3",
 	FIRE = "fire"
 }
-@export_file var reticle_resource
+@export_file var reticle_resource: String = "res://scenes/player_controller/reticles/reticle_0.tscn"
 @export var mouse_sensitivity : float = 0.125
 @export var invert_camera_x_axis : bool = false
 @export var invert_camera_y_axis : bool = false
@@ -29,9 +29,9 @@ class_name PlayerController
 @export var toggle_sprint : bool = false
 @export var pausing_enabled : bool = true
 
-@export_subgroup("Controller Specific")
-@export var controller_support : bool = false
-@export var controller_controls : Dictionary = {
+@export_subgroup("Gamepad Specific")
+@export var gamepad_support : bool = false
+@export var gamepad_controls : Dictionary = {
 	LOOK_LEFT = "look_left",
 	LOOK_RIGHT = "look_right",
 	LOOK_UP = "look_up",
@@ -47,37 +47,42 @@ class_name PlayerController
 #endregion
 
 
-var pawn : Pawn = null
+var pawn : Pawn
 var movement_manager: PawnMovementManager
 var debug_tool: PawnDebugTool
 var Head : Node3D
 var Camera : Camera3D
 var Gunsocket : GunSocket
+var RemoteTransform : RemoteTransform3D
 var mouse_input : Vector2 = Vector2.ZERO
 var reticle : Control
+var split_screen_viewport: SplitScreenViewport = ViewportManager.request_viewport()
+
+
+func _init(new_pawn: Pawn):
+	pawn = new_pawn
+	if pawn.player_controller:
+		pawn.remove_child(pawn.player_controller)
+		pawn.player_controller.queue_free()
+	pawn.add_child(self)
+	owner = pawn
+	Head = pawn.Head
+	Gunsocket = pawn.Gunsocket
+	RemoteTransform = pawn.RemoteTransform
+	movement_manager = pawn.movement_manager
+	debug_tool = pawn.debug_tool
+	if split_screen_viewport != null:
+		Camera = split_screen_viewport.camera
+		RemoteTransform.remote_path = RemoteTransform.get_path_to(Camera)
+	else:
+		Camera = Head.get_node("Camera")
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	pawn.possessed(self)
+
 
 func _ready():
-	process_mode = Node.PROCESS_MODE_ALWAYS # otherwise unpause won't work
-
-	# expects the controller to be a direct child of the Pawn node
-	pawn = get_parent()
-	if not pawn:
-		push_error("PlayerController expects to be child of Pawn (CharacterBody3D).")
-		return
-
-	Head = pawn.get_node("Head")
-	Camera = Head.get_node("Camera")
-	Gunsocket = Head.get_node("GunSocket")
-	movement_manager = pawn.get_node("MovementManager")
-	debug_tool = pawn.get_node("DebugTool")
-
-	owner = pawn
-
 	if reticle_resource:
 		change_reticle(reticle_resource)
-
-	if pawn.has_node("Head/Camera"):
-		Camera = pawn.get_node("Head/Camera")
 
 	# initialize pawn animations, etc.
 	if pawn.has_method("initialize_animations"):
@@ -88,6 +93,8 @@ func _ready():
 		Input.set_use_accumulated_input(false)
 
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+	pawn.possessed(self)
 
 
 func _process(_delta):
@@ -103,11 +110,13 @@ func _process(_delta):
 		if debug_tool.has_method("update_debug_menu_per_frame_from_controller"):
 			debug_tool.update_debug_menu_per_frame_from_controller(fps, status)
 
+	#_update_subviewport_camera_position()
+
 
 
 func _physics_process(_delta):
 
-	if not pawn or !pawn.input_enabled:
+	if not pawn or !pawn.input_enabled or not movement_manager:
 		return
 
 	# gather inputs and forward to pawn
@@ -115,9 +124,10 @@ func _physics_process(_delta):
 	input_dir = Input.get_vector(controls.BACKWARD, controls.FORWARD, controls.LEFT, controls.RIGHT)
 
 	# forward basic flags to pawn
-	movement_manager.desired_input_dir = input_dir
-	movement_manager.input_jump_pressed = Input.is_action_pressed(controls.JUMP)
-	movement_manager.input_jump_just_pressed = Input.is_action_just_pressed(controls.JUMP)
+	if movement_manager:
+		movement_manager.desired_input_dir = input_dir
+		movement_manager.input_jump_pressed = Input.is_action_pressed(controls.JUMP)
+		movement_manager.input_jump_just_pressed = Input.is_action_just_pressed(controls.JUMP)
 
 	if toggle_crouch:
 		if Input.is_action_just_pressed(controls.CROUCH):
@@ -131,8 +141,7 @@ func _physics_process(_delta):
 	else:
 		movement_manager.input_sprint_pressed = Input.is_action_pressed(controls.SPRINT)
 
-	if true:
-		Gunsocket.input_fire_pressed = Input.is_action_pressed("fire")
+	Gunsocket.input_fire_pressed = Input.is_action_pressed("fire")
 
 	# update pawn with head yaw for movement transform
 	if Head:
@@ -143,8 +152,8 @@ func _physics_process(_delta):
 	mouse_input = Vector2(0,0)
 
 	# controller
-	if controller_support:
-		var controller_input = Input.get_vector(controller_controls.LOOK_DOWN, controller_controls.LOOK_UP, controller_controls.LOOK_RIGHT, controller_controls.LOOK_LEFT) * look_sensitivity
+	if gamepad_support:
+		var controller_input = Input.get_vector(gamepad_controls.LOOK_DOWN, gamepad_controls.LOOK_UP, gamepad_controls.LOOK_RIGHT, gamepad_controls.LOOK_LEFT) * look_sensitivity
 
 		if invert_camera_x_axis:
 			controller_input.x *= -1

@@ -4,9 +4,12 @@ class_name Pawn
 # Pawn: movement, physics, state, animations
 
 
+@warning_ignore_start("unused_signal")
 signal pawn_jumped
 signal pawn_landed
 signal pawn_changed_state(old_state: String)
+signal pawn_possessed(player_controller: PlayerController)
+@warning_ignore_restore("unused_signal")
 
 #region Character Export Group
 
@@ -18,12 +21,15 @@ signal pawn_changed_state(old_state: String)
 
 #region Member Variable Initialization
 
+@warning_ignore("unused_private_class_variable")
 var _air_time_ms: float = 0
 
+var player_controller: PlayerController
 
 @onready var Head : Node3D = $Head
-@onready var Camera : Camera3D = $Head/Camera
 @onready var Gunsocket : GunSocket = $Head/GunSocket
+@onready var RemoteTransform : RemoteTransform3D = $Head/RemoteTransform3D
+
 
 # The yaw of the head (radians) provided by PlayerController
 var head_yaw : float = 0.0
@@ -42,7 +48,6 @@ func _ready():
 	health_manager = $HealthManager
 	animation_manager = $AnimationManager
 	debug_tool = $DebugTool
-	Camera.make_current()
 
 
 func _physics_process(delta):
@@ -68,3 +73,8 @@ func check_nodes():
 		push_error("AnimationManager missing.")
 	if not $DebugTool:
 		push_error("DebugTool missing.")
+
+
+func possessed(controller: PlayerController):
+	player_controller = controller
+	pawn_possessed.emit(controller)
