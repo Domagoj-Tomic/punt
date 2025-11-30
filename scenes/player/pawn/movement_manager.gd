@@ -60,8 +60,6 @@ var _no_air_control_until: int:
 		_no_air_control_timestamp = Time.get_ticks_msec()
 var _no_air_control_timestamp: int
 
-var RETICLE : Control
-
 var gravity : float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 var HEAD : Node3D

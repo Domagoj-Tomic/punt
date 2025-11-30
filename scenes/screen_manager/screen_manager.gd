@@ -1,6 +1,9 @@
 extends Control
 class_name ScreenManager
 
+# Essentially a part of the PlayerManager singleton, parented to the root viewport
+# in order to avoid errors pertaining to modifying nodes that aren't ready yet.
+
 
 func _init() -> void:
 	name = "ScreenContainer"

@@ -2,5 +2,6 @@
 
 [resource]
 no_depth_test = true
+albedo_color = Color(0.42745098, 1, 0.5372549, 1)
 emission_enabled = true
 emission = Color(0.4966907, 0.4966907, 0.4966907, 1)

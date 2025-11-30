@@ -1,12 +1,12 @@
 [gd_scene load_steps=26 format=3 uid="uid://brbisld7l2pcm"]
 
-[ext_resource type="Script" uid="uid://bf32ish0yfh1j" path="res://scenes/pawn/gun_socket.gd" id="1_3ppau"]
-[ext_resource type="Script" uid="uid://blr1cvra03430" path="res://scenes/pawn/pawn.gd" id="1_dbje4"]
-[ext_resource type="Script" uid="uid://u5u7xxlvmcxx" path="res://scenes/pawn/debug.gd" id="2_dbje4"]
-[ext_resource type="Script" uid="uid://5abbpkidqnv4" path="res://scenes/pawn/movement_manager.gd" id="4_74r86"]
-[ext_resource type="Script" uid="uid://dqgoixychv3ds" path="res://scenes/pawn/health_manager.gd" id="5_2du13"]
-[ext_resource type="Script" uid="uid://baccftb3vict3" path="res://scenes/pawn/debug_tool.gd" id="6_i74ng"]
-[ext_resource type="Script" uid="uid://dimv5vi5q5kel" path="res://scenes/pawn/animation_manager.gd" id="8_i74ng"]
+[ext_resource type="Script" uid="uid://bf32ish0yfh1j" path="res://scenes/player/pawn/gun_socket.gd" id="1_3ppau"]
+[ext_resource type="Script" uid="uid://blr1cvra03430" path="res://scenes/player/pawn/pawn.gd" id="1_dbje4"]
+[ext_resource type="Script" uid="uid://u5u7xxlvmcxx" path="res://scenes/player/pawn/debug.gd" id="2_dbje4"]
+[ext_resource type="Script" uid="uid://5abbpkidqnv4" path="res://scenes/player/pawn/movement_manager.gd" id="4_74r86"]
+[ext_resource type="Script" uid="uid://dqgoixychv3ds" path="res://scenes/player/pawn/health_manager.gd" id="5_2du13"]
+[ext_resource type="Script" uid="uid://baccftb3vict3" path="res://scenes/player/pawn/debug_tool.gd" id="6_i74ng"]
+[ext_resource type="Script" uid="uid://dimv5vi5q5kel" path="res://scenes/player/pawn/animation_manager.gd" id="8_i74ng"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kp17n"]
 albedo_color = Color(0.909804, 0.596078, 0, 1)
@@ -387,7 +387,6 @@ MarginContainer/constants/margin_top = 10
 [node name="Pawn" type="CharacterBody3D"]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0, 0)
 script = ExtResource("1_dbje4")
-metadata/_edit_group_ = true
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

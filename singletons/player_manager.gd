@@ -1,12 +1,17 @@
 extends Node
 
 
-var max_viewports: int = 4
+# Players
+var MAX_LOCAL_PLAYERS: int = 4
+#var players:
+
+
+# Viewports
 var ss_viewport_res: PackedScene = preload("res://scenes/split_screen_viewport/split_screen_viewport.tscn")
 var ss_viewports: Array[SplitScreenViewport]
 var viewport_count: int:
 	set(value):
-		value = clamp(value, 1, max_viewports)
+		value = clamp(value, 1, MAX_LOCAL_PLAYERS)
 		viewport_count = value
 		_manage_viewport_count(viewport_count)
 var screen_manager := ScreenManager.new()

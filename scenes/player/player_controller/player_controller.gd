@@ -21,7 +21,7 @@ class_name PlayerController
 	WEAPON3 = "select_weapon_3",
 	FIRE = "fire"
 }
-@export_file var reticle_resource: String = "res://scenes/player_controller/reticles/reticle_0.tscn"
+@export_file var reticle_resource: String = "res://scenes/player/player_controller/reticles/reticle_0.tscn"
 @export var mouse_sensitivity : float = 0.125
 @export var invert_camera_x_axis : bool = false
 @export var invert_camera_y_axis : bool = false
@@ -56,7 +56,7 @@ var Gunsocket : GunSocket
 var RemoteTransform : RemoteTransform3D
 var mouse_input : Vector2 = Vector2.ZERO
 var reticle : Control
-var split_screen_viewport: SplitScreenViewport = ViewportManager.request_viewport()
+var split_screen_viewport: SplitScreenViewport
 
 
 func _init(new_pawn: Pawn):
@@ -65,6 +65,7 @@ func _init(new_pawn: Pawn):
 		pawn.remove_child(pawn.player_controller)
 		pawn.player_controller.queue_free()
 	pawn.add_child(self)
+	split_screen_viewport = PlayerManager.request_viewport()
 	owner = pawn
 	Head = pawn.Head
 	Gunsocket = pawn.Gunsocket
@@ -74,17 +75,12 @@ func _init(new_pawn: Pawn):
 	if split_screen_viewport != null:
 		Camera = split_screen_viewport.camera
 		RemoteTransform.remote_path = RemoteTransform.get_path_to(Camera)
-	else:
-		Camera = Head.get_node("Camera")
+		change_reticle()
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	pawn.possessed(self)
 
 
 func _ready():
-	if reticle_resource:
-		change_reticle(reticle_resource)
-
-	# initialize pawn animations, etc.
 	if pawn.has_method("initialize_animations"):
 		pawn.initialize_animations()
 
@@ -110,8 +106,6 @@ func _process(_delta):
 		if debug_tool.has_method("update_debug_menu_per_frame_from_controller"):
 			debug_tool.update_debug_menu_per_frame_from_controller(fps, status)
 
-	#_update_subviewport_camera_position()
-
 
 
 func _physics_process(_delta):
@@ -123,11 +117,9 @@ func _physics_process(_delta):
 	var input_dir = Vector2.ZERO
 	input_dir = Input.get_vector(controls.BACKWARD, controls.FORWARD, controls.LEFT, controls.RIGHT)
 
-	# forward basic flags to pawn
-	if movement_manager:
-		movement_manager.desired_input_dir = input_dir
-		movement_manager.input_jump_pressed = Input.is_action_pressed(controls.JUMP)
-		movement_manager.input_jump_just_pressed = Input.is_action_just_pressed(controls.JUMP)
+	movement_manager.desired_input_dir = input_dir
+	movement_manager.input_jump_pressed = Input.is_action_pressed(controls.JUMP)
+	movement_manager.input_jump_just_pressed = Input.is_action_just_pressed(controls.JUMP)
 
 	if toggle_crouch:
 		if Input.is_action_just_pressed(controls.CROUCH):
@@ -141,14 +133,20 @@ func _physics_process(_delta):
 	else:
 		movement_manager.input_sprint_pressed = Input.is_action_pressed(controls.SPRINT)
 
+	# weapons
 	Gunsocket.input_fire_pressed = Input.is_action_pressed("fire")
+	if Input.is_action_just_pressed("select_weapon_1"):
+		Gunsocket.equip_weapon_by_index(0)
+	if Input.is_action_just_pressed("select_weapon_2"):
+		Gunsocket.equip_weapon_by_index(1)
+	if Input.is_action_just_pressed("select_weapon_3"):
+		Gunsocket.equip_weapon_by_index(2)
 
 	# update pawn with head yaw for movement transform
-	if Head:
-		pawn.head_yaw = Head.rotation.y
+	pawn.head_yaw = Head.rotation.y
 
+	# apply then reset mouse delta
 	movement_manager.look_input = mouse_input
-	# reset mouse delta after applying it
 	mouse_input = Vector2(0,0)
 
 	# controller
@@ -193,8 +191,8 @@ func handle_pausing():
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 
-func change_reticle(new_reticle_path: String = ""):
-	reticle = load(new_reticle_path).instantiate()
-	reticle.character = pawn
-	if pawn.has_node("UserInterface"):
-		pawn.get_node("UserInterface").add_child(reticle)
+func change_reticle():
+	if reticle_resource:
+		reticle = load(reticle_resource).instantiate()
+		reticle.character = pawn
+		Camera.add_child(reticle)

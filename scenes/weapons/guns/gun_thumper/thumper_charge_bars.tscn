@@ -1,0 +1,60 @@
+[gd_scene load_steps=4 format=3 uid="uid://buego4ch4bhn6"]
+
+[ext_resource type="Texture2D" uid="uid://dxwqvob5l6xp3" path="res://assets/radial_progress_thick.svg" id="1_ld8j0"]
+[ext_resource type="Script" uid="uid://b8kk8tthuxgbl" path="res://scenes/weapons/guns/gun_thumper/thumper_charge_bars.gd" id="1_npap7"]
+[ext_resource type="Texture2D" uid="uid://xcquclpvjh4s" path="res://assets/radial_progress_thin.svg" id="2_npap7"]
+
+[node name="ThumperChargeBars" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_npap7")
+
+[node name="ChargeBar1" type="TextureProgressBar" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -500.0
+offset_top = -500.0
+offset_right = 500.0
+offset_bottom = 500.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.15, 0.15)
+pivot_offset = Vector2(500, 500)
+max_value = 1.0
+step = 0.01
+fill_mode = 5
+radial_initial_angle = 270.0
+radial_fill_degrees = 180.0
+texture_progress = ExtResource("1_ld8j0")
+tint_progress = Color(0.7881207, 0.21518236, 3.85046e-07, 1)
+
+[node name="ChargeBar2" type="TextureProgressBar" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -500.0
+offset_top = -500.0
+offset_right = 500.0
+offset_bottom = 500.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.15, 0.15)
+pivot_offset = Vector2(500, 500)
+max_value = 1.0
+step = 0.01
+fill_mode = 5
+radial_initial_angle = 270.0
+radial_fill_degrees = 180.0
+texture_progress = ExtResource("2_npap7")
+tint_progress = Color(0.7881207, 0.21518236, 3.85046e-07, 1)

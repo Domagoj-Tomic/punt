@@ -9,6 +9,8 @@ class_name Thumper
 @export_range(0, 3, 0.1, "or_greater") var main_charge_time: float = 1.5
 @export_range(0, 3, 0.1, "or_greater") var uncharge_factor: float = 1.0
 
+var charge_bar_1: TextureProgressBar
+var charge_bar_2: TextureProgressBar
 var _precharge_perc: float = 0
 var _charge_perc: float = 0
 
@@ -22,19 +24,17 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if is_firing:
-		if _precharge_perc < 1.0:
-			_precharge_perc = move_toward(_precharge_perc, 1.0, delta / precharge_time)
-			$ChargeBars/ChargeBar1.value = _precharge_perc
-		elif _charge_perc < 1.0:
-			_charge_perc = move_toward(_charge_perc, 1.0, delta / main_charge_time)
-			$ChargeBars/ChargeBar2.value = _charge_perc
-	elif _charge_perc == 0.0:
-			_precharge_perc = move_toward(_precharge_perc, 0.0, delta * uncharge_factor / precharge_time)
-			$ChargeBars/ChargeBar1.value = _precharge_perc
-
-
-
+	if charge_bar_1 and charge_bar_2:
+		if is_firing:
+			if _precharge_perc < 1.0:
+				_precharge_perc = move_toward(_precharge_perc, 1.0, delta / precharge_time)
+				charge_bar_1.value = _precharge_perc
+			elif _charge_perc < 1.0:
+				_charge_perc = move_toward(_charge_perc, 1.0, delta / main_charge_time)
+				charge_bar_2.value = _charge_perc
+		elif _charge_perc == 0.0:
+				_precharge_perc = move_toward(_precharge_perc, 0.0, delta * uncharge_factor / precharge_time)
+				charge_bar_1.value = _precharge_perc
 
 
 func _on_stop_firing() -> void:
@@ -57,5 +57,11 @@ func _on_stop_firing() -> void:
 
 	_precharge_perc = 0
 	_charge_perc = 0
-	$ChargeBars/ChargeBar1.value = _precharge_perc
-	$ChargeBars/ChargeBar2.value = _charge_perc
+	charge_bar_1.value = _precharge_perc
+	charge_bar_2.value = _charge_perc
+
+
+func notify_equipped(equipper: Pawn) -> void:
+	await super.notify_equipped(equipper)
+	charge_bar_1 = gui_addon.charge_bar_1
+	charge_bar_2 = gui_addon.charge_bar_2

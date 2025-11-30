@@ -19,7 +19,8 @@ config/icon="res://icon.svg"
 
 LevelManager="*res://singletons/level_manager.gd"
 MenuManager="*res://singletons/menu_manager.gd"
-ViewportManager="*res://singletons/viewport_manager.gd"
+MultiplayerInput="*res://addons/multiplayer_input/multiplayer_input.gd"
+PlayerManager="*res://singletons/player_manager.gd"
 
 [display]
 
@@ -37,7 +38,7 @@ version_control/autoload_on_startup=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot_3d_auto_collision_generator/plugin.cfg", "res://addons/physics_collision_import_generator/plugin.cfg", "res://addons/script-ide/plugin.cfg")
+enabled=PackedStringArray("res://addons/godot_3d_auto_collision_generator/plugin.cfg", "res://addons/multiplayer_input/plugin.cfg", "res://addons/physics_collision_import_generator/plugin.cfg", "res://addons/script-ide/plugin.cfg")
 
 [global_group]
 
