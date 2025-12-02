@@ -30,14 +30,13 @@ class_name PlayerController
 @export var pausing_enabled : bool = true
 
 @export_subgroup("Gamepad Specific")
-@export var gamepad_support : bool = false
 @export var gamepad_controls : Dictionary = {
 	LOOK_LEFT = "look_left",
 	LOOK_RIGHT = "look_right",
 	LOOK_UP = "look_up",
 	LOOK_DOWN = "look_down"
 }
-@export_range(0.001, 1, 0.001) var look_sensitivity : float = 0.035
+@export_range(1, 10) var gamepad_look_sensitivity : float = 3
 
 @export_category("Camera")
 @export_range(60, 120) var fov: float = 75
@@ -46,7 +45,7 @@ class_name PlayerController
 
 #endregion
 
-
+var player: PlayerData
 var pawn : Pawn
 var movement_manager: PawnMovementManager
 var debug_tool: PawnDebugTool
@@ -55,42 +54,39 @@ var Camera : Camera3D
 var Gunsocket : GunSocket
 var RemoteTransform : RemoteTransform3D
 var mouse_input : Vector2 = Vector2.ZERO
+var joy_input : Vector2 = Vector2.ZERO
 var reticle : Control
-var split_screen_viewport: SplitScreenViewport
+var input: DeviceInput
 
 
-func _init(new_pawn: Pawn):
+func _init(new_pawn: Pawn, new_player: PlayerData):
+	name = "PlayerController"
+	player = new_player
 	pawn = new_pawn
 	if pawn.player_controller:
 		pawn.remove_child(pawn.player_controller)
 		pawn.player_controller.queue_free()
 	pawn.add_child(self)
-	split_screen_viewport = PlayerManager.request_viewport()
 	owner = pawn
 	Head = pawn.Head
 	Gunsocket = pawn.Gunsocket
 	RemoteTransform = pawn.RemoteTransform
 	movement_manager = pawn.movement_manager
 	debug_tool = pawn.debug_tool
-	if split_screen_viewport != null:
-		Camera = split_screen_viewport.camera
+	if player.subviewport != null:
+		Camera = player.subviewport.camera
 		RemoteTransform.remote_path = RemoteTransform.get_path_to(Camera)
 		change_reticle()
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	pawn.possessed(self)
+	input  = DeviceInput.new(player.device_id)
 
 
 func _ready():
 	if pawn.has_method("initialize_animations"):
 		pawn.initialize_animations()
 
-	# if running in web, avoid accumulated input
-	if OS.get_name() == "Web":
-		Input.set_use_accumulated_input(false)
-
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-
-	pawn.possessed(self)
 
 
 func _process(_delta):
@@ -109,81 +105,78 @@ func _process(_delta):
 
 
 func _physics_process(_delta):
-
 	if not pawn or !pawn.input_enabled or not movement_manager:
 		return
 
 	# gather inputs and forward to pawn
 	var input_dir = Vector2.ZERO
-	input_dir = Input.get_vector(controls.BACKWARD, controls.FORWARD, controls.LEFT, controls.RIGHT)
+	input_dir = input.get_vector(controls.BACKWARD, controls.FORWARD, controls.LEFT, controls.RIGHT)
 
 	movement_manager.desired_input_dir = input_dir
-	movement_manager.input_jump_pressed = Input.is_action_pressed(controls.JUMP)
-	movement_manager.input_jump_just_pressed = Input.is_action_just_pressed(controls.JUMP)
+	movement_manager.input_jump_pressed = input.is_action_pressed(controls.JUMP)
+	movement_manager.input_jump_just_pressed = input.is_action_just_pressed(controls.JUMP)
 
 	if toggle_crouch:
-		if Input.is_action_just_pressed(controls.CROUCH):
+		if input.is_action_just_pressed(controls.CROUCH):
 			movement_manager.input_crouch_pressed = !movement_manager.input_crouch_pressed
 	else:
-		movement_manager.input_crouch_pressed = Input.is_action_pressed(controls.CROUCH)
+		movement_manager.input_crouch_pressed = input.is_action_pressed(controls.CROUCH)
 
 	if toggle_sprint:
-		if Input.is_action_just_pressed(controls.SPRINT):
+		if input.is_action_just_pressed(controls.SPRINT):
 			movement_manager.input_sprint_pressed = !movement_manager.input_sprint_pressed
 	else:
-		movement_manager.input_sprint_pressed = Input.is_action_pressed(controls.SPRINT)
+		movement_manager.input_sprint_pressed = input.is_action_pressed(controls.SPRINT)
 
 	# weapons
-	Gunsocket.input_fire_pressed = Input.is_action_pressed("fire")
-	if Input.is_action_just_pressed("select_weapon_1"):
+	Gunsocket.input_fire_pressed = input.is_action_pressed("fire")
+	if input.is_action_just_pressed("select_weapon_1"):
 		Gunsocket.equip_weapon_by_index(0)
-	if Input.is_action_just_pressed("select_weapon_2"):
+	if input.is_action_just_pressed("select_weapon_2"):
 		Gunsocket.equip_weapon_by_index(1)
-	if Input.is_action_just_pressed("select_weapon_3"):
+	if input.is_action_just_pressed("select_weapon_3"):
 		Gunsocket.equip_weapon_by_index(2)
 
 	# update pawn with head yaw for movement transform
 	pawn.head_yaw = Head.rotation.y
-
-	# apply then reset mouse delta
-	movement_manager.look_input = mouse_input
-	mouse_input = Vector2(0,0)
-
-	# controller
-	if gamepad_support:
-		var controller_input = Input.get_vector(gamepad_controls.LOOK_DOWN, gamepad_controls.LOOK_UP, gamepad_controls.LOOK_RIGHT, gamepad_controls.LOOK_LEFT) * look_sensitivity
-
-		if invert_camera_x_axis:
-			controller_input.x *= -1
-		if invert_camera_y_axis:
-			controller_input.y *= -1
-
-		movement_manager.look_input = controller_input
 
 	if sprint_dynamic_fov and movement_manager._state == "sprinting":
 		Camera.fov = lerp(Camera.fov, fov + max_dynamic_fov_delta, 0.05)
 	else:
 		Camera.fov = lerp(Camera.fov, fov, 0.05)
 
+	# controller
+	var controller_input: Vector2 = input.get_vector(gamepad_controls.LOOK_LEFT, gamepad_controls.LOOK_RIGHT, gamepad_controls.LOOK_UP, gamepad_controls.LOOK_DOWN)
+	controller_input *= gamepad_look_sensitivity
+	if invert_camera_x_axis:
+		controller_input.x *= -1
+	if invert_camera_y_axis:
+		controller_input.y *= -1
+
+	# apply look input then reset input delta
+	movement_manager.look_input = mouse_input
+	movement_manager.look_input += controller_input
+	mouse_input = Vector2(0,0)
+
 
 func _unhandled_input(event : InputEvent):
-	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		mouse_input.x = event.relative.x * mouse_sensitivity
-		mouse_input.y = event.relative.y * mouse_sensitivity
-		if invert_camera_x_axis:
-			mouse_input.x *= -1
-		if invert_camera_y_axis:
-			mouse_input.y *= -1
-	elif event is InputEventKey:
+	if player.device_id == -1:
+		if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+			mouse_input.x = event.relative.x * mouse_sensitivity
+			mouse_input.y = event.relative.y * mouse_sensitivity
+			if invert_camera_x_axis:
+				mouse_input.x *= -1
+			if invert_camera_y_axis:
+				mouse_input.y *= -1
+	if event is InputEventKey:
 		if event.is_released():
 			# Toggle debug menu on F7
 			if event.keycode == 4194338: # F7
-				if pawn.has_node("UserInterface/DebugPanel"):
-					pawn.get_node("UserInterface/DebugPanel").visible = !pawn.get_node("UserInterface/DebugPanel").visible
+				pawn.debug_tool.debug_panel.visible = !pawn.debug_tool.debug_panel.visible
 
 
 func handle_pausing():
-	if Input.is_action_just_pressed(controls.PAUSE):
+	if input.is_action_just_pressed(controls.PAUSE):
 		get_tree().paused = !get_tree().paused
 		if get_tree().paused:
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE

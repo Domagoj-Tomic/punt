@@ -78,3 +78,4 @@ func check_nodes():
 func possessed(controller: PlayerController):
 	player_controller = controller
 	pawn_possessed.emit(controller)
+	debug_tool.debug_panel = player_controller.player.subviewport.get_node("DebugPanel")

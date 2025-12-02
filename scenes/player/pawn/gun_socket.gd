@@ -19,7 +19,8 @@ func _ready() -> void:
 
 
 func _physics_process(_delta):
-	Weapons[selectedGunIndex].is_firing = input_fire_pressed
+	if Weapons:
+		Weapons[selectedGunIndex].is_firing = input_fire_pressed
 
 
 func  add_weapon(weapon):

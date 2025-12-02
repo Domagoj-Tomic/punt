@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://ccirngmeycnt3"]
+
+[ext_resource type="Script" uid="uid://u5u7xxlvmcxx" path="res://scenes/player/pawn/debug_panel.gd" id="1_pn7bc"]
+
+[sub_resource type="Theme" id="Theme_i74ng"]
+MarginContainer/constants/margin_bottom = 10
+MarginContainer/constants/margin_left = 10
+MarginContainer/constants/margin_right = 10
+MarginContainer/constants/margin_top = 10
+
+[node name="DebugPanel" type="PanelContainer"]
+visible = false
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 453.0
+offset_bottom = 50.0
+theme = SubResource("Theme_i74ng")
+script = ExtResource("1_pn7bc")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+mouse_filter = 2

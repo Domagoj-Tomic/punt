@@ -12,7 +12,6 @@ func _ready() -> void:
 func spawn_player(level: Level) -> Pawn:
 	var pawn: Pawn = pawn_res.instantiate()
 	level.add_child(pawn)
-	if PlayerManager.get_viewports_remaining() > 0:
-		var _player_controller: PlayerController = PlayerController.new(pawn)
+	PlayerManager.assign_pawn_to_player(pawn)
 	pawn.position = self.position
 	return pawn

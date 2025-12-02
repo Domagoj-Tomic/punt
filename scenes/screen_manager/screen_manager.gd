@@ -10,7 +10,11 @@ func _init() -> void:
 
 
 @warning_ignore_start("integer_division")
-func layout_viewports_grid(viewports: Array[SplitScreenViewport]) -> void:
+func layout_viewports_grid(players: Array[PlayerData]) -> void:
+	var debug_panel: PackedScene = load("res://scenes/player/pawn/debug_panel.tscn")
+	var viewports: Array[SplitScreenViewport] = []
+	for player in players:
+		viewports.append(player.subviewport)
 	match viewports.size():
 		0:
 			return
@@ -39,4 +43,7 @@ func layout_viewports_grid(viewports: Array[SplitScreenViewport]) -> void:
 			viewports[1].position.x = get_tree().root.size.x / 2
 			viewports[2].position.y = get_tree().root.size.y / 2
 			viewports[3].position = get_tree().root.size / 2
+
+	for vp in viewports:
+		vp.add_child(debug_panel.instantiate())
 @warning_ignore_restore("integer_division")

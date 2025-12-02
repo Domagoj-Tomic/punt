@@ -1,4 +1,5 @@
 extends PanelContainer
+class_name DebugPanel
 
 
 func _process(_delta):
@@ -7,7 +8,7 @@ func _process(_delta):
 
 func add_property(title : String, value, order : int): # This can either be called once for a static property or called every frame for a dynamic property
 	var target
-	target = $MarginContainer/VBoxContainer.find_child(title, true, false) # I have no idea what true and false does here, the function should be more specific
+	target = $MarginContainer/VBoxContainer.find_child(title, true, false)
 	if !target:
 		target = Label.new() # Debug lines are of type Label
 		$MarginContainer/VBoxContainer.add_child(target)

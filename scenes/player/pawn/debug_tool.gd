@@ -3,7 +3,7 @@ class_name  PawnDebugTool
 
 
 var pawn: Pawn
-var debug_panel: PanelContainer
+var debug_panel: DebugPanel
 var movement_manager: PawnMovementManager
 
 
@@ -13,18 +13,12 @@ func _ready() -> void:
 	else:
 		push_error("Direct parent must be a Pawn")
 
-	if pawn.get_node("UserInterface/DebugPanel"):
-		debug_panel = pawn.get_node("UserInterface/DebugPanel")
-	else:
-		push_error("No DebugPanel found")
-
-	movement_manager = pawn.get_node("MovementManager")
-
-
+	await pawn.ready
+	movement_manager = pawn.movement_manager
 
 
 func update_debug_menu_per_tick():
-	if pawn.has_node("UserInterface/DebugPanel"):
+	if debug_panel != null:
 		debug_panel.add_property("Speed", snappedf(pawn.get_real_velocity().length(), 0.001), 1)
 		debug_panel.add_property("Target speed", movement_manager._current_max_speed, 2)
 		var cv : Vector3 = pawn.velocity

@@ -1,47 +1,41 @@
 extends Node
 
 
-# Players
 var MAX_LOCAL_PLAYERS: int = 4
-#var players:
-
-
-# Viewports
-var ss_viewport_res: PackedScene = preload("res://scenes/split_screen_viewport/split_screen_viewport.tscn")
-var ss_viewports: Array[SplitScreenViewport]
-var viewport_count: int:
+var _ss_viewport_res: PackedScene = preload("res://scenes/split_screen_viewport/split_screen_viewport.tscn")
+var players: Array[PlayerData]
+var player_count: int:
 	set(value):
 		value = clamp(value, 1, MAX_LOCAL_PLAYERS)
-		viewport_count = value
-		_manage_viewport_count(viewport_count)
+		player_count = value
+		_manage_player_count(player_count)
 var screen_manager := ScreenManager.new()
-var viewports_assigned: int = 0
 
 
 func _ready() -> void:
 	get_tree().root.add_child.call_deferred(screen_manager)
 
 
-func _manage_viewport_count(count: int):
-	ss_viewports = []
-	#if count == 1:
-		#return
+func assign_pawn_to_player(pawn) -> PlayerData:
+	var player = _get_next_unnasigned_player()
+	if player == null:
+		return null
+	var player_controller: PlayerController = PlayerController.new(pawn, player)
+	player.player_controller = player_controller
+	return player
+
+
+func _manage_player_count(count: int):
+	players = [] # clear the array before any change
 	for i in range(0, count):
-		ss_viewports.append(ss_viewport_res.instantiate())
-		screen_manager.add_child(ss_viewports[i])
-	screen_manager.layout_viewports_grid(ss_viewports)
+		var plyr: PlayerData = PlayerData.new("", Input.get_connected_joypads()[i] - 1, _ss_viewport_res.instantiate(), null)
+		players.append(plyr)
+		screen_manager.add_child(players[i].subviewport)
+	screen_manager.layout_viewports_grid(players)
 
 
-func request_viewport() -> SplitScreenViewport:
-	# !!!!!! Gotta make this more robust !!!!!!
-	if ss_viewports.size() == 0:
-		return null
-	if get_viewports_remaining() <= 0:
-		return null
-	var vp = ss_viewports[viewports_assigned]
-	viewports_assigned += 1
-	return vp
-
-
-func get_viewports_remaining() -> int:
-	return ss_viewports.size() - viewports_assigned
+func _get_next_unnasigned_player() -> PlayerData:
+	for player in players:
+		if player.player_controller == null:
+			return player
+	return null

@@ -1,8 +1,7 @@
-[gd_scene load_steps=26 format=3 uid="uid://brbisld7l2pcm"]
+[gd_scene load_steps=24 format=3 uid="uid://brbisld7l2pcm"]
 
 [ext_resource type="Script" uid="uid://bf32ish0yfh1j" path="res://scenes/player/pawn/gun_socket.gd" id="1_3ppau"]
 [ext_resource type="Script" uid="uid://blr1cvra03430" path="res://scenes/player/pawn/pawn.gd" id="1_dbje4"]
-[ext_resource type="Script" uid="uid://u5u7xxlvmcxx" path="res://scenes/player/pawn/debug.gd" id="2_dbje4"]
 [ext_resource type="Script" uid="uid://5abbpkidqnv4" path="res://scenes/player/pawn/movement_manager.gd" id="4_74r86"]
 [ext_resource type="Script" uid="uid://dqgoixychv3ds" path="res://scenes/player/pawn/health_manager.gd" id="5_2du13"]
 [ext_resource type="Script" uid="uid://baccftb3vict3" path="res://scenes/player/pawn/debug_tool.gd" id="6_i74ng"]
@@ -376,12 +375,6 @@ _data = {
 &"land_right": SubResource("Animation_vsknp")
 }
 
-[sub_resource type="Theme" id="Theme_i74ng"]
-MarginContainer/constants/margin_bottom = 10
-MarginContainer/constants/margin_left = 10
-MarginContainer/constants/margin_right = 10
-MarginContainer/constants/margin_top = 10
-
 [sub_resource type="SphereShape3D" id="SphereShape3D_65uxm"]
 
 [node name="Pawn" type="CharacterBody3D"]
@@ -421,31 +414,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, -0.5, 0)
 script = ExtResource("1_3ppau")
 
 [node name="RemoteTransform3D" type="RemoteTransform3D" parent="Head"]
-
-[node name="UserInterface" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 1
-
-[node name="DebugPanel" type="PanelContainer" parent="UserInterface"]
-visible = false
-layout_mode = 0
-offset_left = 10.0
-offset_top = 10.0
-offset_right = 453.0
-offset_bottom = 50.0
-theme = SubResource("Theme_i74ng")
-script = ExtResource("2_dbje4")
-
-[node name="MarginContainer" type="MarginContainer" parent="UserInterface/DebugPanel"]
-layout_mode = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="UserInterface/DebugPanel/MarginContainer"]
-layout_mode = 2
 
 [node name="MovementManager" type="Node" parent="."]
 script = ExtResource("4_74r86")
