@@ -27,10 +27,15 @@ func assign_pawn_to_player(pawn) -> PlayerData:
 
 func _manage_player_count(count: int):
 	players = [] # clear the array before any change
-	for i in range(0, count):
-		var plyr: PlayerData = PlayerData.new("", Input.get_connected_joypads()[i] - 1, _ss_viewport_res.instantiate(), null)
+	if Input.get_connected_joypads().size() == 0: # No gamepad, only KB+Mouse connected
+		var plyr: PlayerData = PlayerData.new("", -1, _ss_viewport_res.instantiate(), null)
 		players.append(plyr)
-		screen_manager.add_child(players[i].subviewport)
+		screen_manager.add_child(players[0].subviewport)
+	else:
+		for i in range(0, count):
+			var plyr: PlayerData = PlayerData.new("", Input.get_connected_joypads()[i] - 1, _ss_viewport_res.instantiate(), null)
+			players.append(plyr)
+			screen_manager.add_child(players[i].subviewport)
 	screen_manager.layout_viewports_grid(players)
 
 

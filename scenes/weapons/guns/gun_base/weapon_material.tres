@@ -1,7 +1,6 @@
 [gd_resource type="ORMMaterial3D" format=3 uid="uid://c2dh6pp3n7ndk"]
 
 [resource]
-no_depth_test = true
-albedo_color = Color(0.42745098, 1, 0.5372549, 1)
+albedo_color = Color(1, 0.79731405, 0.8701211, 1)
 emission_enabled = true
 emission = Color(0.4966907, 0.4966907, 0.4966907, 1)

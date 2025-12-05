@@ -1,3 +1,4 @@
+@warning_ignore_start("integer_division")
 extends Control
 class_name ScreenManager
 
@@ -9,7 +10,6 @@ func _init() -> void:
 	name = "ScreenContainer"
 
 
-@warning_ignore_start("integer_division")
 func layout_viewports_grid(players: Array[PlayerData]) -> void:
 	var debug_panel: PackedScene = load("res://scenes/player/pawn/debug_panel.tscn")
 	var viewports: Array[SplitScreenViewport] = []
@@ -46,4 +46,3 @@ func layout_viewports_grid(players: Array[PlayerData]) -> void:
 
 	for vp in viewports:
 		vp.add_child(debug_panel.instantiate())
-@warning_ignore_restore("integer_division")

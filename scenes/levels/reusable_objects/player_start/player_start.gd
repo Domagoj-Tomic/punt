@@ -15,3 +15,8 @@ func spawn_player(level: Level) -> Pawn:
 	PlayerManager.assign_pawn_to_player(pawn)
 	pawn.position = self.position
 	return pawn
+
+
+func respawn_player(pawn: Pawn):
+	pawn.position = self.position
+	pawn.velocity = Vector3.ZERO

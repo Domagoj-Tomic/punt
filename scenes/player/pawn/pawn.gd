@@ -15,7 +15,6 @@ signal pawn_possessed(player_controller: PlayerController)
 
 @export var input_enabled : bool = true
 @export var mass : float = 100
-#@export var impulse_scale: float = 1.0
 
 #endregion
 

@@ -1,31 +1,42 @@
-[gd_scene load_steps=14 format=3 uid="uid://cp1fi0shlidoc"]
+[gd_scene load_steps=16 format=3 uid="uid://cp1fi0shlidoc"]
 
 [ext_resource type="Script" uid="uid://0mi0rrv7ipbd" path="res://scenes/levels/level_test/level_test.gd" id="2_5tbcj"]
 [ext_resource type="PackedScene" uid="uid://bs3pfxl3fj6un" path="res://scenes/levels/reusable_objects/player_start/player_start.tscn" id="3_anjyw"]
-[ext_resource type="PackedScene" uid="uid://4jvjgrar6mxd" path="res://assets/PUNT_Arena_1.glb" id="4_5tbcj"]
+[ext_resource type="PackedScene" uid="uid://dllp4ehsl7nph" path="res://assets/punt_arena_1.tscn" id="5_5p5ly"]
 [ext_resource type="Script" uid="uid://bo05d2wpmx1vr" path="res://scenes/levels/level_test/death_plane.gd" id="5_ahoqo"]
 [ext_resource type="PackedScene" uid="uid://cisemywgijufa" path="res://scenes/levels/reusable_objects/acceleration_pad/acceleration_pad.tscn" id="5_jaywt"]
+[ext_resource type="Script" uid="uid://b7rn44wxnddrj" path="res://scenes/levels/level_test/teleporter.gd" id="6_5p5ly"]
+
+[sub_resource type="Gradient" id="Gradient_jaywt"]
+colors = PackedColorArray(0.14901961, 0.5372549, 1, 1, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_jaywt"]
+offset = Vector3(0, 0, 1000)
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_jaywt"]
+noise = SubResource("FastNoiseLite_jaywt")
+color_ramp = SubResource("Gradient_jaywt")
+seamless = true
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_5p5ly"]
+panorama = SubResource("NoiseTexture2D_jaywt")
+
+[sub_resource type="Sky" id="Sky_jaywt"]
+sky_material = SubResource("PanoramaSkyMaterial_5p5ly")
 
 [sub_resource type="Environment" id="Environment_iurjo"]
-fog_enabled = true
-fog_density = 0.001
+background_mode = 2
+sky = SubResource("Sky_jaywt")
+ambient_light_source = 3
+ssao_enabled = true
+ssil_enabled = true
 
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_1p0p1"]
 
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_iaocn"]
-bounce = 0.6
-
-[sub_resource type="SphereMesh" id="SphereMesh_hwv7p"]
-
-[sub_resource type="SphereShape3D" id="SphereShape3D_md31e"]
-
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_5tbcj"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_2hfwj"]
-size = Vector3(10, 2, 0.2)
-
-[sub_resource type="BoxMesh" id="BoxMesh_jaywt"]
-size = Vector3(10, 2, 0.2)
+[sub_resource type="SphereShape3D" id="SphereShape3D_wmlnd"]
+radius = 2.0
 
 [node name="LevelTest" type="Node3D"]
 script = ExtResource("2_5tbcj")
@@ -37,22 +48,6 @@ transform = Transform3D(1, 0, 0, 0, 0.25881907, 0.9659258, 0, -0.9659258, 0.2588
 environment = SubResource("Environment_iurjo")
 camera_attributes = SubResource("CameraAttributesPractical_1p0p1")
 
-[node name="RigidBody3D" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 4.196989, 0)
-physics_material_override = SubResource("PhysicsMaterial_iaocn")
-continuous_cd = true
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D"]
-mesh = SubResource("SphereMesh_hwv7p")
-skeleton = NodePath("")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
-shape = SubResource("SphereShape3D_md31e")
-
-[node name="PlayerStart" parent="." instance=ExtResource("3_anjyw")]
-
-[node name="Map Geometry" parent="." instance=ExtResource("4_5tbcj")]
-
 [node name="DeathPlane" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -20, 0)
 script = ExtResource("5_ahoqo")
@@ -61,21 +56,47 @@ script = ExtResource("5_ahoqo")
 shape = SubResource("WorldBoundaryShape3D_5tbcj")
 debug_color = Color(0.84135777, 0.0010009271, 0.9074187, 0.41960785)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 0, 3.1160717)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
-shape = SubResource("BoxShape3D_2hfwj")
-debug_color = Color(0.8326753, 0.0013765395, 0.94073117, 0.41960785)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
-mesh = SubResource("BoxMesh_jaywt")
-
 [node name="AccelerationPad" parent="." instance=ExtResource("5_jaywt")]
-transform = Transform3D(1.0000004, 0, 0, 0, 0.73923177, -0.67345136, 0, 0.6734515, 0.73923165, 2.5640604, 0.6948667, -3.5722628)
+transform = Transform3D(1.0000004, 0, 0, 0, 0.73923177, -0.67345136, 0, 0.6734515, 0.73923165, 0, 0.858, -3)
+
+[node name="PUNT_Arena_1" parent="." instance=ExtResource("5_5p5ly")]
+
+[node name="PlayerStart" parent="." instance=ExtResource("3_anjyw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.5, -1.6349998, 0)
+
+[node name="PlayerStart2" parent="." instance=ExtResource("3_anjyw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.6349998, -17.5)
+
+[node name="Sprite3D" parent="PlayerStart2" index="0"]
+transform = Transform3D(-1.0927847e-08, 0, -0.25, 0, 0.25, 0, 0.25, 0, -1.0927847e-08, 0, 1, 0)
+
+[node name="PlayerStart3" parent="." instance=ExtResource("3_anjyw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.635, 17.5)
+
+[node name="Sprite3D" parent="PlayerStart3" index="0"]
+transform = Transform3D(-1.0927847e-08, 0, -0.25, 0, 0.25, 0, 0.25, 0, -1.0927847e-08, 0, 1, 0)
+
+[node name="PlayerStart4" parent="." instance=ExtResource("3_anjyw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.5, -0.635, 0)
+
+[node name="Sprite3D" parent="PlayerStart4" index="0"]
+transform = Transform3D(-1.0927847e-08, 0, -0.25, 0, 0.25, 0, 0.25, 0, -1.0927847e-08, 0, 0, 0)
+
+[node name="Teleporter" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -6.5000005, -76.4534)
+script = ExtResource("6_5p5ly")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Teleporter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("SphereShape3D_wmlnd")
+
+[node name="Destination" type="Marker3D" parent="Teleporter"]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 25, 0)
 
 [connection signal="body_entered" from="DeathPlane" to="DeathPlane" method="_on_body_entered"]
+[connection signal="body_entered" from="Teleporter" to="Teleporter" method="_on_body_entered"]
 
 [editable path="PlayerStart"]
+[editable path="PlayerStart2"]
+[editable path="PlayerStart3"]
+[editable path="PlayerStart4"]

@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://dllp4ehsl7nph"]
+
+[ext_resource type="PackedScene" uid="uid://iemju1njkvdb" path="res://assets/PUNT_Arena_1.glb" id="1_eul8j"]
+[ext_resource type="Material" uid="uid://b806i0ny8vq8a" path="res://assets/new_standard_material_3d.tres" id="2_kfwak"]
+
+[node name="PUNT_Arena_1" instance=ExtResource("1_eul8j")]
+
+[node name="Central Island" parent="." index="1"]
+surface_material_override/1 = ExtResource("2_kfwak")
+
+[node name="Cube" parent="." index="2"]
+surface_material_override/1 = ExtResource("2_kfwak")

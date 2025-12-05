@@ -11,7 +11,10 @@ var pawn: Pawn
 @export var sprint_speed : float = base_speed * 2
 @export var crouch_speed : float = 3.0
 @export var acceleration : float = 10.0
+@export var base_floor_friction : float = 10.0
 @export var jump_velocity : float = 7.0
+## How soon can the "friction reduction" debuff be cleared by touching the ground, in milliseconds
+@export_range(0, 1000, 100, "or_greater") var _friction_reduction_recovery_time : int = 500
 ## How soon can the "no air control" debuff be cleared by touching the ground, in milliseconds
 @export_range(0, 1000, 100, "or_greater") var no_air_control_recovery_time : int = 500
 ## Horizontal speed at which the "no air control" debuff is cleared
@@ -59,6 +62,12 @@ var _no_air_control_until: int:
 		_no_air_control_until = value
 		_no_air_control_timestamp = Time.get_ticks_msec()
 var _no_air_control_timestamp: int
+var _friction_multiplier: float
+var _friction_reduction_until: int:
+	set(value):
+		_friction_reduction_until = value
+		_friction_reduction_timestamp = Time.get_ticks_msec()
+var _friction_reduction_timestamp: int
 
 var gravity : float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
@@ -108,7 +117,7 @@ func manage_pawn_movement(delta):
 	handle_jumping(delta)
 
 	var moving = desired_input_dir != Vector2.ZERO
-	handle_movement(delta, desired_input_dir, pawn.head_yaw)
+	handle_movement(delta, desired_input_dir)
 
 	_handle_head_rotation()
 
@@ -155,23 +164,41 @@ func handle_jumping(delta: float):
 				_buffer_deadline = jump_buffer + Time.get_ticks_msec()
 
 
-func handle_movement(delta, input_dir: Vector2, head_y: float):
+func handle_movement(delta, input_dir: Vector2):
 	# convert input_dir from local to world using head yaw
-	var direction = input_dir.rotated(-head_y)
+	var direction = input_dir.rotated(-pawn.head_yaw)
 	direction = Vector3(direction.x, 0.0, direction.y)
 
 	if pawn.is_on_floor():
-		pawn.velocity.x = lerp(pawn.velocity.x, direction.x * _current_max_speed, acceleration * delta)
-		pawn.velocity.z = lerp(pawn.velocity.z, direction.z * _current_max_speed, acceleration * delta)
+		if direction.length() > 0: # if moving
+			var accel = acceleration * _friction_multiplier * delta
+			pawn.velocity.x = lerp(pawn.velocity.x, direction.x * _current_max_speed, accel)
+			pawn.velocity.z = lerp(pawn.velocity.z, direction.z * _current_max_speed, accel)
+		else:
+			var friction = base_floor_friction * _friction_multiplier * delta
+			pawn.velocity.x = lerp(pawn.velocity.x, direction.x * _current_max_speed, friction)
+			pawn.velocity.z = lerp(pawn.velocity.z, direction.z * _current_max_speed, friction)
 	else:
 		if _no_air_control_until < Time.get_ticks_msec() and direction.length() > 0:
-			pawn.velocity.x = lerp(pawn.velocity.x, direction.x * base_speed, acceleration * delta * air_control)
-			pawn.velocity.z = lerp(pawn.velocity.z, direction.z * base_speed, acceleration * delta * air_control)
+			var control = acceleration * air_control * delta
+			pawn.velocity.x = lerp(pawn.velocity.x, direction.x * base_speed, control)
+			pawn.velocity.z = lerp(pawn.velocity.z, direction.z * base_speed, control)
 		pawn.velocity.x *= 1 - horizontal_damping * delta
 		pawn.velocity.z *= 1 - horizontal_damping * delta
 
 	_handle_no_air_control()
+	_handle_friction()
 	pawn.move_and_slide()
+
+
+func _handle_friction(clear:bool = false):
+	if clear:
+		_friction_reduction_until = 0
+	if _friction_reduction_until < Time.get_ticks_msec():
+		_friction_multiplier = 1
+	elif pawn.is_on_floor():
+		if Time.get_ticks_msec() > _friction_reduction_recovery_time + _friction_reduction_timestamp:
+			_friction_reduction_until = 0
 
 
 func _handle_no_air_control(clear:bool = false):
@@ -197,6 +224,11 @@ func _handle_head_rotation():
 
 func disable_air_control(duration_ms: int):
 	_no_air_control_until = duration_ms + Time.get_ticks_msec()
+
+
+func reduce_friction(new_multiplier: float, duration_ms: int):
+	_friction_multiplier = clamp(new_multiplier, 0, 1)
+	_friction_reduction_until = duration_ms + Time.get_ticks_msec()
 
 
 #region State Handling

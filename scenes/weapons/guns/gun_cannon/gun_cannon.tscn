@@ -18,14 +18,14 @@ immediate_shapecast_update = true
 muzzle_path = NodePath("Mesh/Muzzle")
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1.9106855e-15, -4.371139e-08, 1, -1, -4.371139e-08, 0, 4.371139e-08, -1, -4.371139e-08, 0, 0, -0.75)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, -0.75)
 mesh = SubResource("CylinderMesh_53ank")
 
 [node name="Muzzle" type="Marker3D" parent="Mesh"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.75, 0)
 
-[node name="ShapeCast3D" type="ShapeCast3D" parent="Mesh"]
-transform = Transform3D(4.3711402e-08, 8.742277e-08, 1, -1.509958e-07, -1, 8.742278e-08, 1, -1.509958e-07, -4.371139e-08, 0, 0, 0)
+[node name="ShapeCast3D" type="ShapeCast3D" parent="Mesh/Muzzle"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.5)
 enabled = false
 shape = SubResource("SphereShape3D_ntm2i")
-target_position = Vector3(0, -0.75, 0)
+target_position = Vector3(0, 0, -1.5)

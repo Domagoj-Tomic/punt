@@ -110,7 +110,7 @@ func _physics_process(_delta):
 
 	# gather inputs and forward to pawn
 	var input_dir = Vector2.ZERO
-	input_dir = input.get_vector(controls.BACKWARD, controls.FORWARD, controls.LEFT, controls.RIGHT)
+	input_dir = input.get_vector(controls.LEFT, controls.RIGHT, controls.FORWARD, controls.BACKWARD)
 
 	movement_manager.desired_input_dir = input_dir
 	movement_manager.input_jump_pressed = input.is_action_pressed(controls.JUMP)

@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://4jvjgrar6mxd"
+uid="uid://iemju1njkvdb"
 path="res://.godot/imported/PUNT_Arena_1.glb-0fe611975204d9f98a32cf820163fa97.scn"
 
 [deps]
@@ -33,7 +33,7 @@ animation/fps=30
 animation/trimming=false
 animation/remove_immutable_tracks=true
 animation/import_rest_as_RESET=false
-import_script/path="res://addons/physics_collision_import_generator/import_scripts/import_physics_trimesh.gd"
+import_script/path=""
 materials/extract=0
 materials/extract_format=0
 materials/extract_path=""

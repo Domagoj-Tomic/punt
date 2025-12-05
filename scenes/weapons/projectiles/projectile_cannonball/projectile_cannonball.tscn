@@ -20,7 +20,7 @@ physics_material_override = SubResource("PhysicsMaterial_nt4n4")
 gravity_scale = 0.0
 continuous_cd = true
 contact_monitor = true
-max_contacts_reported = 1
+max_contacts_reported = 10
 script = ExtResource("1_rfecx")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]

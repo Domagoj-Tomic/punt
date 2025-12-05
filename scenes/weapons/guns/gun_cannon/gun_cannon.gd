@@ -3,13 +3,11 @@ class_name Cannon
 
 
 @export var projectileVelocity: float = 50.0
-@export var resolve_overlap_with_shapecast: bool = true
 @export var immediate_shapecast_update: bool = false
-@export var max_back_distance: float = 0.75
 
 var cannonball_instance = preload("res://scenes/weapons/projectiles/projectile_cannonball/projectile_cannonball.tscn")
 
-@onready var shapeCast: ShapeCast3D = get_node_or_null("Mesh/ShapeCast3D") as ShapeCast3D
+@onready var shapecast: ShapeCast3D = get_node_or_null("Mesh/Muzzle/ShapeCast3D") as ShapeCast3D
 
 
 func _on_start_firing() -> void:
@@ -21,67 +19,31 @@ func fire_projectile() -> void:
 		push_error("%s: cannonball instance is not set" % self)
 		return
 
-	var projectile: Projectile = cannonball_instance.instantiate() as Projectile
-	if projectile == null:
+	var cannonball: Projectile = cannonball_instance.instantiate() as Projectile
+	if cannonball == null:
 		push_error("%s: failed to instantiate cannonball instance" % self)
 		return
 
 	var muzzle_pos: Vector3 = get_muzzle_global_position()
-	var aim_dir: Vector3 = muzzle.global_transform.basis.y
+	var aim_dir: Vector3 = -muzzle.global_transform.basis.z
 
-	shapeCast.clear_exceptions()
+	shapecast.clear_exceptions()
 	if owning_character:
-		shapeCast.add_exception(owning_character)
-	shapeCast.target_position = shapeCast.to_local(muzzle_pos)
+		shapecast.add_exception(owning_character)
+	shapecast.target_position = shapecast.to_local(muzzle_pos)
 
-	shapeCast.force_shapecast_update()
-
-	var spawn_pos: Vector3 = muzzle_pos
-	if shapeCast and shapeCast.is_colliding():
-		spawn_pos = shapeCast.get_collision_point(0)
-
-	if resolve_overlap_with_shapecast:
-		spawn_pos = _resolve_overlap(spawn_pos, aim_dir, projectile)
-
-	add_child(projectile)
-	projectile.global_position = spawn_pos
-	if projectile.has_method("init"):
-		projectile.init(owning_character)
-	if projectile is RigidBody3D:
-		projectile.linear_velocity = aim_dir * projectileVelocity
+	add_child(cannonball)
+	cannonball.global_position = _resolve_overlap(aim_dir)
+	cannonball.global_basis = global_basis
+	cannonball.initiate(owning_character, projectileVelocity)
 
 
-func _resolve_overlap(initial_pos: Vector3, aim_dir: Vector3, projectile_scene: RigidBody3D) -> Vector3:
-	var proj_radius: float = _get_projectile_collision_radius(projectile_scene)
-	if proj_radius <= 0.0:
-		proj_radius = 0.2
-
-	var step: float = max(proj_radius * 0.25, 0.01)
-	var pos: Vector3 = initial_pos
-
-	var dss = get_world_3d().direct_space_state
-	var sphere = SphereShape3D.new()
-	sphere.radius = proj_radius
-
-	var collider_exclude: Array = []
-	if owning_character:
-		collider_exclude.append(owning_character)
-	collider_exclude.append(self)
-
-	var back_moved: float = 0.0
-	while true:
-		var params = PhysicsShapeQueryParameters3D.new()
-		params.shape = sphere
-		params.transform = Transform3D(Basis(), pos)
-		params.exclude = collider_exclude
-		var result: Array = dss.intersect_shape(params, 1)
-		if result.size() == 0:
-			break
-		pos -= aim_dir * step
-		back_moved += step
-		if back_moved >= max_back_distance:
-			break
-	return pos
+func _resolve_overlap(aim_dir: Vector3) -> Vector3:
+	shapecast.force_shapecast_update()
+	var muzzle_pos: Vector3 = get_muzzle_global_position()
+	var safe_fraction: float = shapecast.get_closest_collision_safe_fraction()
+	var max_back_dist: float = abs(shapecast.target_position.z)
+	return muzzle_pos - aim_dir * ( 1 - safe_fraction) * max_back_dist
 
 
 func _get_projectile_collision_radius(projectile_scene: RigidBody3D) -> float:
