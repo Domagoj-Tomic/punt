@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://cp1fi0shlidoc"]
+[gd_scene load_steps=18 format=3 uid="uid://cp1fi0shlidoc"]
 
 [ext_resource type="Script" uid="uid://0mi0rrv7ipbd" path="res://scenes/levels/level_test/level_test.gd" id="2_5tbcj"]
 [ext_resource type="PackedScene" uid="uid://bs3pfxl3fj6un" path="res://scenes/levels/reusable_objects/player_start/player_start.tscn" id="3_anjyw"]
@@ -37,6 +37,15 @@ ssil_enabled = true
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_wmlnd"]
 radius = 2.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5p5ly"]
+transparency = 1
+albedo_color = Color(0.96862745, 0.6901961, 0.7176471, 0.40784314)
+
+[sub_resource type="SphereMesh" id="SphereMesh_wmlnd"]
+material = SubResource("StandardMaterial3D_5p5ly")
+radius = 2.0
+height = 4.0
 
 [node name="LevelTest" type="Node3D"]
 script = ExtResource("2_5tbcj")
@@ -91,7 +100,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 shape = SubResource("SphereShape3D_wmlnd")
 
 [node name="Destination" type="Marker3D" parent="Teleporter"]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 25, 0)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 22, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Teleporter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+mesh = SubResource("SphereMesh_wmlnd")
 
 [connection signal="body_entered" from="DeathPlane" to="DeathPlane" method="_on_body_entered"]
 [connection signal="body_entered" from="Teleporter" to="Teleporter" method="_on_body_entered"]
